@@ -1,0 +1,1606 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <title>Samy Zaidi | Business Systems Architect</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Space+Grotesk:wght@300;500;700&display=swap');
+
+        :root {
+            --neon-lime: #ccff00;
+            --signal-red: #ff3366;
+            --cyan-glow: #00f0ff;
+        }
+
+        * {
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: 'Space Grotesk', sans-serif;
+            background: #0a0a0a;
+            color: #fff;
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        @media (max-width: 768px) {
+            body { cursor: auto !important; }
+            .cursor-main, .cursor-trail { display: none !important; }
+        }
+
+        .cursor-main {
+            width: 20px;
+            height: 20px;
+            border: 2px solid var(--neon-lime);
+            position: fixed;
+            pointer-events: none;
+            z-index: 9999;
+            mix-blend-mode: difference;
+            transition: transform 0.1s;
+            clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+        }
+
+        .cursor-trail {
+            width: 40px;
+            height: 40px;
+            border: 1px solid rgba(204, 255, 0, 0.3);
+            position: fixed;
+            pointer-events: none;
+            z-index: 9998;
+            border-radius: 50%;
+            transition: transform 0.3s ease-out;
+        }
+
+        .cursor-hover {
+            transform: scale(2) rotate(45deg);
+            background: var(--neon-lime);
+            mix-blend-mode: difference;
+        }
+
+        .scanlines {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 9997;
+            opacity: 0.15;
+            background: linear-gradient(
+                to bottom,
+                rgba(255,255,255,0),
+                rgba(255,255,255,0) 50%,
+                rgba(0,0,0,0.1) 50%,
+                rgba(0,0,0,0.1)
+            );
+            background-size: 100% 4px;
+        }
+
+        @media (max-width: 768px) {
+            .scanlines { opacity: 0.05; }
+        }
+
+        .glitch {
+            position: relative;
+            display: inline-block;
+        }
+
+        .glitch::before,
+        .glitch::after {
+            content: attr(data-text);
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        .glitch::before {
+            left: 2px;
+            text-shadow: -2px 0 var(--signal-red);
+            clip: rect(24px, 550px, 90px, 0);
+            animation: glitch-anim-2 3s infinite linear alternate-reverse;
+        }
+
+        .glitch::after {
+            left: -2px;
+            text-shadow: -2px 0 var(--cyan-glow);
+            clip: rect(85px, 550px, 140px, 0);
+            animation: glitch-anim 2.5s infinite linear alternate-reverse;
+        }
+
+        @keyframes glitch-anim {
+            0% { clip: rect(10px, 9999px, 85px, 0); }
+            20% { clip: rect(63px, 9999px, 130px, 0); }
+            40% { clip: rect(25px, 9999px, 15px, 0); }
+            60% { clip: rect(88px, 9999px, 95px, 0); }
+            80% { clip: rect(45px, 9999px, 60px, 0); }
+            100% { clip: rect(15px, 9999px, 110px, 0); }
+        }
+
+        @keyframes glitch-anim-2 {
+            0% { clip: rect(65px, 9999px, 100px, 0); }
+            20% { clip: rect(20px, 9999px, 45px, 0); }
+            40% { clip: rect(90px, 9999px, 120px, 0); }
+            60% { clip: rect(35px, 9999px, 70px, 0); }
+            80% { clip: rect(75px, 9999px, 15px, 0); }
+            100% { clip: rect(50px, 9999px, 95px, 0); }
+        }
+
+        .terminal {
+            background: #111;
+            border: 1px solid #333;
+            border-radius: 8px;
+            overflow: hidden;
+            font-family: 'JetBrains Mono', monospace;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+        }
+
+        .terminal-header {
+            background: #1a1a1a;
+            padding: 8px 12px;
+            display: flex;
+            gap: 6px;
+            border-bottom: 1px solid #333;
+        }
+
+        .terminal-btn {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+
+        .terminal-body {
+            padding: 16px;
+            font-size: 12px;
+            line-height: 1.6;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        @media (min-width: 768px) {
+            .terminal-body {
+                padding: 20px;
+                font-size: 14px;
+            }
+        }
+
+        .terminal-line {
+            opacity: 0;
+            transform: translateX(-20px);
+            white-space: nowrap;
+        }
+
+        .terminal-line.visible {
+            opacity: 1;
+            transform: translateX(0);
+            transition: all 0.3s ease;
+        }
+
+        .prompt { color: var(--neon-lime); }
+        .command { color: #fff; }
+        .output { color: #888; }
+        .success { color: var(--neon-lime); }
+
+        /* Projects Section with Infinite Scroll */
+        .projects-wrapper {
+            position: relative;
+        }
+
+        .projects-scroll {
+            display: flex;
+            gap: 1.5rem;
+            overflow-x: auto;
+            scroll-snap-type: x mandatory;
+            -webkit-overflow-scrolling: touch;
+            padding: 1rem 0.5rem;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+            scroll-behavior: smooth;
+            overflow-x: scroll;
+            cursor: grab;
+        }
+
+        .projects-scroll:active {
+            cursor: grabbing;
+        }
+
+        .projects-scroll::-webkit-scrollbar {
+            display: none;
+        }
+
+        .project-card {
+            flex: 0 0 85%;
+            max-width: 380px;
+            background: #111;
+            border: 2px solid #333;
+            border-radius: 12px;
+            overflow: hidden;
+            scroll-snap-align: start;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        @media (min-width: 768px) {
+            .project-card {
+                flex: 0 0 350px;
+                max-width: 350px;
+            }
+        }
+
+        .project-card:hover {
+            border-color: var(--neon-lime);
+            transform: translateY(-4px);
+        }
+
+        .project-card::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: var(--neon-lime);
+            transform: translate(4px, 4px);
+            border-radius: 12px;
+            z-index: -1;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .project-card:hover::before {
+            opacity: 0.3;
+        }
+
+        .project-image {
+            width: 100%;
+            height: 180px;
+            background: linear-gradient(135deg, #1a1a1a 0%, #0a0a0a 100%);
+            border-bottom: 1px solid #333;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .project-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            opacity: 0.8;
+            transition: opacity 0.3s;
+        }
+
+        .project-card:hover .project-image img {
+            opacity: 1;
+        }
+
+        .project-image-placeholder {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: #444;
+        }
+
+        .project-content {
+            padding: 1.25rem;
+        }
+
+        .project-number {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #333;
+            line-height: 1;
+            margin-bottom: 0.5rem;
+        }
+
+        .project-card:hover .project-number {
+            color: var(--neon-lime);
+        }
+
+        /* Navigation Arrows */
+        .nav-arrow {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 48px;
+            height: 48px;
+            background: rgba(10, 10, 10, 0.9);
+            border: 2px solid #333;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 10;
+            transition: all 0.3s ease;
+            color: #fff;
+        }
+
+        .nav-arrow:hover:not(:disabled) {
+            border-color: var(--neon-lime);
+            color: var(--neon-lime);
+            background: rgba(204, 255, 0, 0.1);
+        }
+
+        .nav-arrow:active:not(:disabled) {
+            transform: translateY(-50%) scale(0.95);
+        }
+
+        .nav-arrow:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+            border-color: #222;
+            color: #444;
+        }
+
+        .nav-arrow.prev {
+            left: -10px;
+        }
+
+        .nav-arrow.next {
+            right: -10px;
+        }
+
+        @media (max-width: 768px) {
+            .nav-arrow {
+                display: none;
+            }
+        }
+
+        .marquee-container {
+            overflow: hidden;
+            white-space: nowrap;
+            position: relative;
+        }
+
+        .marquee-content {
+            display: inline-flex;
+            animation: scroll 20s linear infinite;
+        }
+
+        @keyframes scroll {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-50%); }
+        }
+
+        .grid-bg {
+            background-image: 
+                linear-gradient(rgba(204, 255, 0, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(204, 255, 0, 0.03) 1px, transparent 1px);
+            background-size: 50px 50px;
+        }
+
+        .noise-bg {
+            position: relative;
+        }
+
+        .noise-bg::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+            opacity: 0.05;
+            pointer-events: none;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            display: inline-block;
+            animation: pulse 2s infinite;
+        }
+
+        .status-online { 
+            background: var(--neon-lime); 
+            box-shadow: 0 0 10px var(--neon-lime); 
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .reveal {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .reveal.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .diagonal-lines {
+            background: repeating-linear-gradient(
+                45deg,
+                transparent,
+                transparent 10px,
+                rgba(204, 255, 0, 0.03) 10px,
+                rgba(204, 255, 0, 0.03) 20px
+            );
+        }
+
+        .mobile-menu {
+            position: fixed;
+            inset: 0;
+            background: rgba(10, 10, 10, 0.98);
+            backdrop-filter: blur(20px);
+            z-index: 40;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            gap: 2rem;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+
+        .mobile-menu.active {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        .mobile-menu a {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1.5rem;
+            color: #fff;
+            text-decoration: none;
+            padding: 1rem;
+            border: 2px solid transparent;
+            transition: all 0.3s;
+        }
+
+        .mobile-menu a:hover {
+            border-color: var(--neon-lime);
+            color: var(--neon-lime);
+        }
+
+        .hamburger {
+            width: 30px;
+            height: 20px;
+            position: relative;
+            cursor: pointer;
+            z-index: 50;
+        }
+
+        .hamburger span {
+            display: block;
+            position: absolute;
+            height: 2px;
+            width: 100%;
+            background: #fff;
+            transition: all 0.3s ease;
+        }
+
+        .hamburger span:nth-child(1) { top: 0; }
+        .hamburger span:nth-child(2) { top: 50%; transform: translateY(-50%); }
+        .hamburger span:nth-child(3) { bottom: 0; }
+
+        .hamburger.active span:nth-child(1) {
+            top: 50%;
+            transform: translateY(-50%) rotate(45deg);
+        }
+
+        .hamburger.active span:nth-child(2) {
+            opacity: 0;
+        }
+
+        .hamburger.active span:nth-child(3) {
+            bottom: 50%;
+            transform: translateY(50%) rotate(-45deg);
+        }
+
+        .touch-btn {
+            min-height: 48px;
+            min-width: 48px;
+        }
+
+        ::-webkit-scrollbar {
+            width: 6px;
+            background: #0a0a0a;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #333;
+            border-radius: 3px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--neon-lime);
+        }
+
+        ::selection {
+            background: var(--neon-lime);
+            color: #000;
+        }
+
+        input:focus, textarea:focus, select:focus {
+            outline: none;
+            border-color: var(--neon-lime) !important;
+        }
+
+        html {
+            -webkit-text-size-adjust: 100%;
+            scroll-behavior: smooth;
+        }
+
+        /* ========== ADDED MOBILE-ONLY STYLES ========== */
+        @media (max-width: 768px) {
+            /* Better spacing for mobile */
+            .container-padding {
+                padding-left: 1rem;
+                padding-right: 1rem;
+            }
+            
+            /* Hero text size adjustment for mobile */
+            h1 {
+                font-size: 2.5rem !important;
+                line-height: 1.2 !important;
+            }
+            
+            /* Smaller padding on mobile */
+            section {
+                padding-top: 2rem;
+                padding-bottom: 2rem;
+            }
+            
+            /* Better form inputs on mobile - prevents zoom */
+            input, select, textarea {
+                font-size: 16px !important;
+            }
+            
+            /* Project cards full width on mobile */
+            .project-card {
+                flex: 0 0 90%;
+                max-width: 90%;
+            }
+            
+            /* Stack section mobile adjustment */
+            #stack .grid {
+                gap: 2rem;
+            }
+            
+            /* Services section mobile */
+            #services .grid {
+                gap: 1rem;
+            }
+            
+            /* Contact section mobile spacing */
+            #contact .grid {
+                gap: 0.75rem;
+            }
+            
+            /* Footer mobile */
+            footer .flex {
+                flex-direction: column;
+                text-align: center;
+                gap: 0.75rem;
+            }
+            
+            /* Marquee text size */
+            .marquee-content {
+                font-size: 0.875rem;
+            }
+            
+            /* Logs section mobile */
+            #logs .space-y-3 {
+                gap: 0.75rem;
+            }
+            
+            /* Stats section mobile */
+            #stack .border {
+                padding: 1.5rem;
+            }
+            
+            #stack .text-5xl {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body class="noise-bg">
+
+    <!-- Custom Cursor - Desktop Only -->
+    <div class="cursor-main hidden md:block"></div>
+    <div class="cursor-trail hidden md:block"></div>
+
+    <!-- Scanlines -->
+    <div class="scanlines"></div>
+
+    <!-- Navigation -->
+    <nav class="fixed top-0 w-full z-50 border-b border-white/10 bg-black/90 backdrop-blur-md">
+        <div class="max-w-7xl mx-auto px-4 md:px-6 py-3 md:py-4 flex justify-between items-center">
+            <div class="flex items-center gap-2 md:gap-3">
+                <div class="w-2 h-2 md:w-3 md:h-3 rounded-full bg-[#ccff00] animate-pulse"></div>
+                <span class="font-mono text-xs md:text-sm tracking-wider truncate">Samy Zaidi</span>
+            </div>
+
+            <div class="hidden md:flex items-center gap-8 font-mono text-xs tracking-wider">
+                <a href="#work" class="hover:text-[#ccff00] transition-colors py-2">[WORK]</a>
+                <a href="#stack" class="hover:text-[#ccff00] transition-colors py-2">[STACK]</a>
+                <a href="#services" class="hover:text-[#ccff00] transition-colors py-2">[SERVICES]</a>
+                <a href="#logs" class="hover:text-[#ccff00] transition-colors py-2">[LOGS]</a>
+                <a href="#contact" class="px-4 py-2 border border-[#ccff00] text-[#ccff00] hover:bg-[#ccff00] hover:text-black transition-all">[INIT_CONTACT]</a>
+            </div>
+
+            <!-- Mobile Hamburger -->
+            <div class="hamburger md:hidden touch-btn flex flex-col justify-center" id="hamburger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Mobile Menu -->
+    <div class="mobile-menu" id="mobileMenu">
+        <a href="#work" class="mobile-link">[WORK]</a>
+        <a href="#stack" class="mobile-link">[STACK]</a>
+        <a href="#services" class="mobile-link">[SERVICES]</a>
+        <a href="#logs" class="mobile-link">[LOGS]</a>
+        <a href="#contact" class="mobile-link text-[#ccff00]">[INIT_CONTACT]</a>
+    </div>
+
+    <!-- Hero Section (REWRITTEN - AGENCY POSITIONING) -->
+    <section class="min-h-screen flex items-center justify-center relative grid-bg pt-20">
+        <div class="max-w-7xl mx-auto px-6 grid lg:grid-cols-2 gap-12 items-center">
+            
+            <!-- LEFT -->
+            <div class="space-y-8">
+                <div class="font-mono text-[10px] text-gray-500 tracking-widest border-l-2 border-[#ccff00] pl-4">
+                    SYSTEM_STATUS: ACTIVE<br>
+                    BUILD_TYPE: BUSINESS_INFRASTRUCTURE<br>
+                    DEPLOYMENT: CLIENT_PRODUCTION_ENV
+                </div>
+
+                <h1 class="text-5xl md:text-7xl font-bold leading-none">
+                    WE BUILD<br>
+                    <span class="text-[#ccff00]">BUSINESS SYSTEMS</span><br>
+                    NOT WEBSITES
+                </h1>
+
+                <p class="text-gray-400 text-base md:text-lg max-w-xl leading-relaxed border-l border-gray-800 pl-4">
+                    We design and deploy full-stack business infrastructure: e-commerce engines, automation systems, CRM platforms, and internal tools that increase revenue and eliminate manual work.
+                </p>
+
+                <div class="font-mono text-xs text-gray-500 border-l border-gray-800 pl-4">
+                    SPECIALIZATION:<br>
+                    Laravel Architecture • Business Automation • E-commerce Systems • CRM Platforms • API Integrations
+                </div>
+
+                <div class="flex flex-col sm:flex-row gap-4">
+                    <a href="#services" class="px-8 py-4 bg-[#ccff00] text-black font-bold hover:bg-white transition text-center">
+                        VIEW_SYSTEMS
+                    </a>
+                    <a href="#contact" class="px-8 py-4 border border-gray-700 hover:border-[#ccff00] hover:text-[#ccff00] transition text-center font-mono text-sm">
+                        REQUEST_BUILD
+                    </a>
+                </div>
+            </div>
+
+            <!-- RIGHT - Terminal -->
+            <div class="terminal reveal">
+                <div class="terminal-header">
+                    <div class="terminal-btn bg-[#ff3366]"></div>
+                    <div class="terminal-btn bg-[#ffcc00]"></div>
+                    <div class="terminal-btn bg-[#ccff00]"></div>
+                    <span class="ml-auto text-[10px] md:text-xs text-gray-500 font-mono">bash — 80x24</span>
+                </div>
+                <div class="terminal-body" id="terminalContent">
+                    <div class="terminal-line"><span class="prompt">➜</span> <span class="command">whoami</span></div>
+                    <div class="terminal-line output">samy_zaidi_laravel_architect</div>
+                    
+                    <div class="terminal-line"><span class="prompt">➜</span> <span class="command">cat specialization.txt</span></div>
+                    <div class="terminal-line output">High-conversion e-commerce platforms</div>
+                    <div class="terminal-line output">Business automation systems</div>
+                    <div class="terminal-line output">Admin dashboards & CRM tools</div>
+                    
+                    <div class="terminal-line"><span class="prompt">➜</span> <span class="command">ls -la ./stack/</span></div>
+                    <div class="terminal-line output">drwxr-xr-x  laravel/</div>
+                    <div class="terminal-line output">drwxr-xr-x  filament/</div>
+                    <div class="terminal-line output">drwxr-xr-x  livewire/</div>
+                    <div class="terminal-line output">drwxr-xr-x  tailwind/</div>
+                    
+                    <div class="terminal-line"><span class="prompt">➜</span> <span class="command">ping availability.status</span></div>
+                    <div class="terminal-line success">64 bytes from Q2_2026: ttl=50 time=0.8ms STATUS=AVAILABLE</div>
+                    
+                    <div class="terminal-line"><span class="prompt">➜</span> <span class="command blink">_</span></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Floating Elements -->
+        <div class="absolute bottom-10 left-4 md:left-10 font-mono text-[10px] md:text-xs text-gray-600 hidden lg:block">
+            <div class="flex items-center gap-2 mb-2">
+                <span class="status-dot status-online"></span>
+                SYSTEM_OPERATIONAL
+            </div>
+            <div>UPTIME: 99.9%</div>
+        </div>
+    </section>
+
+    <!-- Marquee -->
+    <div class="py-6 border-y border-white/10 bg-black overflow-hidden">
+        <div class="marquee-container">
+            <div class="marquee-content font-mono text-lg md:text-2xl font-bold tracking-widest">
+                <span class="mx-4 md:mx-8 text-gray-600">LARAVEL</span>
+                <span class="mx-4 md:mx-8 text-[#ccff00]">FILAMENT</span>
+                <span class="mx-4 md:mx-8 text-gray-600">LIVEWIRE</span>
+                <span class="mx-4 md:mx-8 text-[#ccff00]">TAILWIND</span>
+                <span class="mx-4 md:mx-8 text-gray-600">ALPINE.JS</span>
+                <span class="mx-4 md:mx-8 text-[#ccff00]">MYSQL</span>
+                <span class="mx-4 md:mx-8 text-gray-600">REDIS</span>
+                <span class="mx-4 md:mx-8 text-[#ccff00]">DOCKER</span>
+                <span class="mx-4 md:mx-8 text-gray-600">LARAVEL</span>
+                <span class="mx-4 md:mx-8 text-[#ccff00]">FILAMENT</span>
+                <span class="mx-4 md:mx-8 text-gray-600">LIVEWIRE</span>
+                <span class="mx-4 md:mx-8 text-[#ccff00]">TAILWIND</span>
+                <span class="mx-4 md:mx-8 text-gray-600">ALPINE.JS</span>
+                <span class="mx-4 md:mx-8 text-[#ccff00]">MYSQL</span>
+                <span class="mx-4 md:mx-8 text-gray-600">REDIS</span>
+                <span class="mx-4 md:mx-8 text-[#ccff00]">DOCKER</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Work Section - Horizontal Scroll with Infinite Navigation -->
+    <section id="work" class="py-16 md:py-24 relative diagonal-lines">
+        <div class="max-w-7xl mx-auto px-4 md:px-6">
+            <div class="mb-8 md:mb-12">
+                <span class="font-mono text-[10px] md:text-xs text-[#ccff00] tracking-widest block mb-2">// SELECT * FROM projects WHERE impact = 'high'</span>
+                <h2 class="text-3xl md:text-5xl font-bold mt-2 md:mt-4 glitch" data-text="DEPLOYED_SYSTEMS">DEPLOYED_SYSTEMS</h2>
+            </div>
+
+            <!-- Projects Wrapper with Navigation -->
+            <div class="projects-wrapper relative px-4 md:px-12">
+                <button class="nav-arrow prev" id="prevBtn">
+                    <i data-lucide="chevron-left" class="w-6 h-6"></i>
+                </button>
+                <button class="nav-arrow next" id="nextBtn">
+                    <i data-lucide="chevron-right" class="w-6 h-6"></i>
+                </button>
+
+                <div class="projects-scroll" id="projectsScroll">
+                    <!-- Project 1 -->
+                    <div class="project-card" data-project-id="0">
+                        <div class="project-image">
+                            <div class="project-image-placeholder">
+                                <i data-lucide="shopping-cart" class="w-12 h-12 mb-2"></i>
+                                <span class="font-mono text-xs">
+                                    <img src="/pics/Ecom.png" alt="">
+                                </span>
+                            </div>
+                        </div>
+                        <div class="project-content">
+                            <div class="project-number">01</div>
+                            <div class="flex items-center gap-2 mb-2">
+                                <span class="px-2 py-0.5 bg-[#ccff00] text-black text-[10px] font-bold font-mono">LIVE</span>
+                                <span class="text-gray-500 font-mono text-[10px]">2026.04</span>
+                            </div>
+                            <h3 class="text-lg font-bold mb-2">Ecommerce Platform</h3>
+                            <p class="text-gray-400 text-xs mb-3 line-clamp-2">E-commerce platform with WhatsApp-integrated COD system. Eliminates cart abandonment.</p>
+                            
+                            <div class="space-y-1 font-mono text-[10px] mb-3">
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600">CONVERSION</span>
+                                    <span class="text-[#ccff00]">+40%</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600">CHECKOUT_TIME</span>
+                                    <span class="text-[#ccff00]">-60%</span>
+                                </div>
+                            </div>
+
+                            <div class="flex gap-2">
+                                <button class="flex-1 py-2 border border-gray-700 hover:border-[#ccff00] hover:text-[#ccff00] transition-all font-mono text-[10px] touch-btn">
+                                    <a href="https://lilies-collections.com" target="_blank" rel="noopener noreferrer">VIEW_CASE</a>
+                                </button>
+                                
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Project 2 -->
+                    <div class="project-card" data-project-id="1">
+                        <div class="project-image">
+                            <div class="project-image-placeholder">
+                                <i data-lucide="users" class="w-12 h-12 mb-2"></i>
+                                <span class="font-mono text-xs">
+                                    <img src="/pics/ngs.png" alt="">
+                                </span>
+                            </div>
+                        </div>
+                        <div class="project-content">
+                            <div class="project-number">02</div>
+                            <div class="flex items-center gap-2 mb-2">
+                                <span class="px-2 py-0.5 bg-gray-800 text-gray-400 text-[10px] font-bold font-mono">COMPLETED</span>
+                                <span class="text-gray-500 font-mono text-[10px]">2025.11</span>
+                            </div>
+                            <h3 class="text-lg font-bold mb-2">NGS TECH</h3>
+                            <p class="text-gray-400 text-xs mb-3 line-clamp-2">Client management with automated lead scoring and invoice generation.</p>
+                            
+                            <div class="space-y-1 font-mono text-[10px] mb-3">
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600">TIME_SAVED</span>
+                                    <span class="text-[#ccff00]">15hrs/wk</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600">PAPERLESS</span>
+                                    <span class="text-[#ccff00]">100%</span>
+                                </div>
+                            </div>
+
+                            <div class="flex gap-2">
+                                <button class="flex-1 py-2 border border-gray-700 hover:border-[#ccff00] hover:text-[#ccff00] transition-all font-mono text-[10px] touch-btn">
+                                   <a href="https://www.ngstech.dz" target="_blank" rel="noopener noreferrer">VIEW_CASE</a>
+                                </button>
+                                
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Project 3 -->
+                    <div class="project-card" data-project-id="2">
+                        <div class="project-image">
+                            <div class="project-image-placeholder">
+                                <i data-lucide="calendar" class="w-12 h-12 mb-2"></i>
+                                <span class="font-mono text-xs">
+                                    <img src="/pics/orabi.png" alt="">
+                                </span>
+                            </div>
+                        </div>
+                        <div class="project-content">
+                            <div class="project-number">03</div>
+                            <div class="flex items-center gap-2 mb-2">
+                                <span class="px-2 py-0.5 bg-[#ccff00] text-black text-[10px] font-bold font-mono">LIVE</span>
+                                <span class="text-gray-500 font-mono text-[10px]">2023.08</span>
+                            </div>
+                            <h3 class="text-lg font-bold mb-2">El Orabi system</h3>
+                            <p class="text-gray-400 text-xs mb-3 line-clamp-2">Real-time scheduling with conflict resolution and Stripe deposit collection.</p>
+                            
+                            <div class="space-y-1 font-mono text-[10px] mb-3">
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600">DOUBLE_BOOKINGS</span>
+                                    <span class="text-[#ccff00]">0%</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600">REVENUE</span>
+                                    <span class="text-[#ccff00]">+25%</span>
+                                </div>
+                            </div>
+
+                            <div class="flex gap-2">
+                                <button class="flex-1 py-2 border border-gray-700 hover:border-[#ccff00] hover:text-[#ccff00] transition-all font-mono text-[10px] touch-btn">
+                                     <a href="https://elorabi-system.com" target="_blank" rel="noopener noreferrer">VIEW_CASE</a>
+                                </button>
+                                
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Project 4 -->
+                    <div class="project-card" data-project-id="3">
+                        <div class="project-image">
+                            <div class="project-image-placeholder">
+                                <i data-lucide="package" class="w-12 h-12 mb-2"></i>
+                                <span class="font-mono text-xs">
+                                    <img src="/pics/mf.png" alt="">
+                                </span>
+                            </div>
+                        </div>
+                        <div class="project-content">
+                            <div class="project-number">04</div>
+                            <div class="flex items-center gap-2 mb-2">
+                                <span class="px-2 py-0.5 bg-[#ccff00] text-black text-[10px] font-bold font-mono">Completed</span>
+                                <span class="text-gray-500 font-mono text-[10px]">2023.02</span>
+                            </div>
+                            <h3 class="text-lg font-bold mb-2">MF International Events</h3>
+                            <p class="text-gray-400 text-xs mb-3 line-clamp-2">Agence événementielle internationale</p>
+                            
+                            <div class="space-y-1 font-mono text-[10px] mb-3">
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600">DOUBLES</span>
+                                    <span class="text-[#ccff00]">-90%</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600">REVENUE</span>
+                                    <span class="text-[#ccff00]">+35%</span>
+                                </div>
+                            </div>
+
+                            <div class="flex gap-2">
+                                <button class="flex-1 py-2 border border-gray-700 hover:border-[#ccff00] hover:text-[#ccff00] transition-all font-mono text-[10px] touch-btn">
+                                    <a href="https://mf-international-events.com" target="_blank" rel="noopener noreferrer"></a>VIEW_CASE</a>
+                                </button>
+                                
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <!-- Project 5 -->
+                    <div class="project-card" data-project-id="4">
+                        <div class="project-image">
+                            <div class="project-image-placeholder">
+                                <i data-lucide="package" class="w-12 h-12 mb-2"></i>
+                                <span class="font-mono text-xs">
+                                    <img src="/pics/tutor.png" alt="Tutor Educ">
+                                </span>
+                            </div>
+                        </div>
+                        <div class="project-content">
+                            <div class="project-number">05</div>
+                            <div class="flex items-center gap-2 mb-2">
+                                <span class="px-2 py-0.5 bg-[#ccff00] text-black text-[10px] font-bold font-mono">Completed</span>
+                                <span class="text-gray-500 font-mono text-[10px]">2023.08</span>
+                            </div>
+                            <h3 class="text-lg font-bold mb-2">Tutor Educ</h3>
+                            <p class="text-gray-400 text-xs mb-3 line-clamp-2">Platform for educational tutoring services</p>
+                            
+                            <div class="space-y-1 font-mono text-[10px] mb-3">
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600">DOUBLES</span>
+                                    <span class="text-[#ccff00]">-90%</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600">REVENUE</span>
+                                    <span class="text-[#ccff00]">+35%</span>
+                                </div>
+                            </div>
+
+                            <div class="flex gap-2">
+                                <button class="flex-1 py-2 border border-gray-700 hover:border-[#ccff00] hover:text-[#ccff00] transition-all font-mono text-[10px] touch-btn">
+                                    <a href="https://tutor-educ.com" target="_blank" rel="noopener noreferrer">VIEW_CASE</a>
+                                </button>
+                                
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Project 6-->
+                    <div class="project-card" data-project-id="5">
+                        <div class="project-image">
+                            <div class="project-image-placeholder">
+                                <i data-lucide="package" class="w-12 h-12 mb-2"></i>
+                                <span class="font-mono text-xs">
+                                    <img src="/pics/cnr.png" alt="Tutor Educ">
+                                </span>
+                            </div>
+                        </div>
+                        <div class="project-content">
+                            <div class="project-number">06</div>
+                            <div class="flex items-center gap-2 mb-2">
+                                <span class="px-2 py-0.5 bg-[#ccff00] text-black text-[10px] font-bold font-mono">Completed</span>
+                                <span class="text-gray-500 font-mono text-[10px]">2022.11</span>
+                            </div>
+                            <h3 class="text-lg font-bold mb-2">CNR Dashboard</h3>
+                            <p class="text-gray-400 text-xs mb-3 line-clamp-2">Dashboard for CNR data visualization and suivi de Trop Percu </p>
+                            
+                            <div class="space-y-1 font-mono text-[10px] mb-3">
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600">TP Fault </span>
+                                    <span class="text-[#ccff00]">-60%</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600">Data visualization </span>
+                                    <span class="text-[#ccff00]">+55%</span>
+                                </div>
+                            </div>
+
+                            <div class="flex gap-2">
+                                <button class="flex-1 py-2 border border-gray-700 hover:border-[#ccff00] hover:text-[#ccff00] transition-all font-mono text-[10px] touch-btn">
+                                    <a href="#" target="_blank" rel="noopener noreferrer">VIEW_CASE</a>
+                                </button>
+                                
+                            </div>
+                        </div>
+                    </div>
+
+
+                    
+                </div>
+
+                <!-- Navigation Dots -->
+                <div class="project-nav-dots" id="navDots">
+                    <div class="nav-dot active" data-dot-index="0"></div>
+                    <div class="nav-dot" data-dot-index="1"></div>
+                    <div class="nav-dot" data-dot-index="2"></div>
+                    <div class="nav-dot" data-dot-index="3"></div>
+                </div>
+            </div>
+
+            <div class="swipe-hint">
+                <i data-lucide="arrow-left" class="w-4 h-4"></i>
+                <span>SWIPE TO EXPLORE</span>
+                <i data-lucide="arrow-right" class="w-4 h-4"></i>
+            </div>
+        </div>
+    </section>
+
+    <!-- Stack Section (REWRITTEN - ENGINEERING POSITIONING) -->
+    <section id="stack" class="py-24 bg-[#0f0f0f]">
+        <div class="max-w-7xl mx-auto px-6 grid md:grid-cols-2 gap-16 items-center">
+            <div>
+                <span class="font-mono text-xs text-[#ccff00]">// ENGINEERING_CAPABILITIES</span>
+                <h2 class="text-4xl md:text-5xl font-bold mt-4 mb-6">SYSTEM_ARCHITECTURE STACK</h2>
+                <p class="text-gray-400 mb-8">We don't use tools randomly. Every layer is selected to build scalable, production-grade systems that support real business operations.</p>
+                <div class="space-y-3 font-mono text-sm">
+                    <div class="p-4 border border-gray-800 hover:border-[#ccff00] transition-colors">Laravel 11 — Business Backend Architecture</div>
+                    <div class="p-4 border border-gray-800 hover:border-[#ccff00] transition-colors">FilamentPHP — Admin & Internal Systems</div>
+                    <div class="p-4 border border-gray-800 hover:border-[#ccff00] transition-colors">Livewire 3 — Reactive Interfaces</div>
+                    <div class="p-4 border border-gray-800 hover:border-[#ccff00] transition-colors">Tailwind CSS — UI Systems</div>
+                    <div class="p-4 border border-gray-800 hover:border-[#ccff00] transition-colors">MySQL / Redis — Data & Performance Layer</div>
+                    <div class="p-4 border border-gray-800 hover:border-[#ccff00] transition-colors">APIs / Webhooks — System Integration Layer</div>
+                </div>
+            </div>
+
+            <!-- STATS -->
+            <div class="border border-gray-800 p-10 text-center">
+                <div class="mb-8">
+                    <div class="text-5xl font-bold text-[#ccff00]">98%</div>
+                    <div class="text-xs text-gray-500 mt-2">CLIENT RETENTION</div>
+                </div>
+                <div class="mb-8">
+                    <div class="text-5xl font-bold">50+</div>
+                    <div class="text-xs text-gray-500 mt-2">SYSTEMS DEPLOYED</div>
+                </div>
+                <div>
+                    <div class="text-5xl font-bold text-[#ccff00]">24–72h</div>
+                    <div class="text-xs text-gray-500 mt-2">MVP DELIVERY</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Services Section (NEW HIGH-END POSITIONING) -->
+    <section id="services" class="py-24 bg-black border-t border-white/10">
+        <div class="max-w-7xl mx-auto px-6">
+            <span class="font-mono text-xs text-[#ccff00]">// BUSINESS_SYSTEMS_OFFERING</span>
+            <h2 class="text-4xl md:text-5xl font-bold mt-4 mb-12">WHAT WE BUILD</h2>
+            <div class="grid md:grid-cols-3 gap-6 font-mono">
+                <div class="border border-gray-800 p-6 hover:border-[#ccff00] transition-all">
+                    <div class="text-[#ccff00] text-xs mb-2">FOUNDATION</div>
+                    <h3 class="text-lg font-bold mb-3">Landing Systems</h3>
+                    <p class="text-gray-500 text-sm mb-4">High-conversion landing pages engineered for business goals, not aesthetics.</p>
+                    <div class="text-[#ccff00] font-bold">40,000 – 90,000 DA</div>
+                                    </div>
+                                    <div class="border border-gray-800 p-6 hover:border-[#ccff00] transition-all">
+                                        <div class="text-[#ccff00] text-xs mb-2">BUSINESS CORE</div>
+                                        <h3 class="text-lg font-bold mb-3">Automation & CRM</h3>
+                                        <p class="text-gray-500 text-sm mb-4">Internal dashboards, workflows, invoicing, and operational automation systems.</p>
+                    <div class="text-[#ccff00] font-bold">120,000 – 350,000 DA</div>
+                                    </div>
+                                    <div class="border border-gray-800 p-6 hover:border-[#ccff00] transition-all">
+                                        <div class="text-[#ccff00] text-xs mb-2">FULL SCALE</div>
+                                        <h3 class="text-lg font-bold mb-3">E-commerce Platforms</h3>
+                                        <p class="text-gray-500 text-sm mb-4">Complete business platforms with payments, admin panels, analytics, and scaling systems.</p>
+                    <div class="text-[#ccff00] font-bold">250,000 – 800,000 DA</div>
+                </div>
+            </div>
+            <div class="mt-16 border-l-2 border-[#ccff00] pl-6 text-gray-400 font-mono text-sm">
+                We don't build websites. We build systems that replace manual work, automate revenue, and scale operations.
+            </div>
+        </div>
+    </section>
+
+    <!-- Philosophy / Logs Section -->
+    <section id="logs" class="py-16 md:py-24 relative">
+        <div class="max-w-4xl mx-auto px-4 md:px-6">
+            <div class="text-center mb-8 md:mb-12">
+                <span class="font-mono text-[10px] md:text-xs text-[#ccff00] tracking-widest block mb-2">// SYSTEM_LOGS</span>
+                <h2 class="text-3xl md:text-5xl font-bold mt-2 glitch" data-text="OPERATING_PRINCIPLES">OPERATING_PRINCIPLES</h2>
+            </div>
+
+            <div class="space-y-3 md:space-y-4 font-mono text-xs md:text-sm">
+                <div class="border-l-2 border-[#ccff00] pl-4 md:pl-6 py-2 reveal">
+                    <div class="text-gray-500 mb-1 text-[10px] md:text-xs">[2026-04-19T10:23:01] INFO:</div>
+                    <div class="text-white leading-relaxed text-sm md:text-base">Business logic over buzzwords. Every feature must justify its existence in revenue or time saved.</div>
+                </div>
+                <div class="border-l-2 border-gray-700 pl-4 md:pl-6 py-2 reveal">
+                    <div class="text-gray-500 mb-1 text-[10px] md:text-xs">[2026-04-19T10:23:45] WARN:</div>
+                    <div class="text-white leading-relaxed text-sm md:text-base">No "pixel-perfect" nonsense. Functional, fast, and profitable beats pretty and useless.</div>
+                </div>
+                <div class="border-l-2 border-gray-700 pl-4 md:pl-6 py-2 reveal">
+                    <div class="text-gray-500 mb-1 text-[10px] md:text-xs">[2026-04-19T10:24:12] DEBUG:</div>
+                    <div class="text-white leading-relaxed text-sm md:text-base">Code is liability. Less code = less bugs = less maintenance = more profit for client.</div>
+                </div>
+                <div class="border-l-2 border-[#ff3366] pl-4 md:pl-6 py-2 reveal">
+                    <div class="text-gray-500 mb-1 text-[10px] md:text-xs">[2026-04-19T10:25:00] ERROR:</div>
+                    <div class="text-white leading-relaxed text-sm md:text-base">Template websites detected in sector. Deploying custom solutions immediately.</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact" class="py-16 md:py-24 bg-[#0a0a0a] border-t border-white/10">
+        <div class="max-w-3xl mx-auto px-4 md:px-6">
+            <div class="text-center mb-8 md:mb-12">
+                <span class="font-mono text-[10px] md:text-xs text-[#ccff00] tracking-widest block mb-2">// ESTABLISH_CONNECTION</span>
+                <h2 class="text-3xl md:text-5xl font-bold mt-2 mb-4">INITIATE_PROJECT</h2>
+                <p class="text-gray-500 font-mono text-xs md:text-sm">$ ./start_business_relationship.sh</p>
+            </div>
+
+            <form class="space-y-4 md:space-y-6" onsubmit="event.preventDefault(); handleCommand(this);">
+                <div class="grid md:grid-cols-2 gap-4 md:gap-6">
+                    <div class="relative">
+                        <label class="block font-mono text-[10px] md:text-xs text-gray-500 mb-1 md:mb-2">IDENTIFIER (NAME)</label>
+                        <input type="text" required class="w-full bg-transparent border border-gray-800 p-3 md:p-4 font-mono text-xs md:text-sm focus:border-[#ccff00] focus:outline-none transition-colors" placeholder="ENTER_NAME">
+                    </div>
+                    <div class="relative">
+                        <label class="block font-mono text-[10px] md:text-xs text-gray-500 mb-1 md:mb-2">CONTACT_POINT (EMAIL)</label>
+                        <input type="email" required class="w-full bg-transparent border border-gray-800 p-3 md:p-4 font-mono text-xs md:text-sm focus:border-[#ccff00] focus:outline-none transition-colors" placeholder="ENTER_EMAIL">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block font-mono text-[10px] md:text-xs text-gray-500 mb-1 md:mb-2">PROJECT_TYPE</label>
+                    <select class="w-full bg-transparent border border-gray-800 p-3 md:p-4 font-mono text-xs md:text-sm focus:border-[#ccff00] focus:outline-none transition-colors text-white">
+                        <option value="" class="bg-black">SELECT_SYSTEM_TYPE</option>
+                        <option value="ecommerce" class="bg-black">E-COMMERCE_ENGINE</option>
+                        <option value="crm" class="bg-black">CRM_NEURAL_NET</option>
+                        <option value="booking" class="bg-black">BOOKING_PROTOCOL</option>
+                        <option value="custom" class="bg-black">CUSTOM_ARCHITECTURE</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label class="block font-mono text-[10px] md:text-xs text-gray-500 mb-1 md:mb-2">DATA_PAYLOAD (DETAILS)</label>
+                    <textarea rows="4" required class="w-full bg-transparent border border-gray-800 p-3 md:p-4 font-mono text-xs md:text-sm focus:border-[#ccff00] focus:outline-none transition-colors resize-none" placeholder="DESCRIBE_YOUR_SYSTEM_REQUIREMENTS..."></textarea>
+                </div>
+
+                <button type="submit" id="submitBtn" class="w-full bg-[#ccff00] text-black py-3 md:py-4 font-bold font-mono tracking-wider hover:bg-white transition-all relative group touch-btn">
+                    <span class="relative z-10 flex items-center justify-center gap-2 text-sm md:text-base">
+                        TRANSMIT_DATA
+                        <i data-lucide="send" class="w-4 h-4"></i>
+                    </span>
+                </button>
+            </form>
+
+            <div class="mt-8 md:mt-12 grid grid-cols-1 md:grid-cols-3 gap-3 md:gap-4 font-mono text-xs">
+                <a href="https://wa.me/+213661430103" target="_blank" class="flex items-center gap-3 p-3 md:p-4 border border-gray-800 hover:border-[#ccff00] transition-colors group touch-btn">
+                    <i data-lucide="message-circle" class="w-5 h-5 text-gray-600 group-hover:text-[#ccff00] flex-shrink-0"></i>
+                    <div class="min-w-0">
+                        <div class="text-gray-500 text-[10px] md:text-xs">WHATSAPP</div>
+                        <div class="text-white text-xs md:text-sm truncate">+213661430103</div>
+                    </div>
+                </a>
+                <a href="mailto:sami.dose@gmail.com" class="flex items-center gap-3 p-3 md:p-4 border border-gray-800 hover:border-[#ccff00] transition-colors group touch-btn">
+                    <i data-lucide="mail" class="w-5 h-5 text-gray-600 group-hover:text-[#ccff00] flex-shrink-0"></i>
+                    <div class="min-w-0">
+                        <div class="text-gray-500 text-[10px] md:text-xs">EMAIL</div>
+                        <div class="text-white text-xs md:text-sm truncate">sami.dose@gmail.com</div>
+                    </div>
+                </a>
+                <div class="flex items-center gap-3 p-3 md:p-4 border border-gray-800 touch-btn">
+                    <div class="w-5 h-5 rounded-full bg-[#ccff00] animate-pulse flex-shrink-0"></div>
+                    <div class="min-w-0">
+                        <div class="text-gray-500 text-[10px] md:text-xs">STATUS</div>
+                        <div class="text-[#ccff00] text-xs md:text-sm truncate">AVAILABLE_Q2</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="py-6 md:py-8 border-t border-white/10 bg-black">
+        <div class="max-w-7xl mx-auto px-4 md:px-6 flex flex-col md:flex-row justify-between items-center gap-3 md:gap-4 font-mono text-[10px] md:text-xs text-gray-600">
+            <div class="text-center md:text-left">© 2026 Samy Zaidi // ALL_RIGHTS_RESERVED</div>
+            <div class="flex gap-4 md:gap-6">
+                <a href="#" class="hover:text-[#ccff00] transition-colors py-2">[GITHUB]</a>
+                <a href="#" class="hover:text-[#ccff00] transition-colors py-2">[LINKEDIN]</a>
+                <a href="#" class="hover:text-[#ccff00] transition-colors py-2">[TWITTER]</a>
+            </div>
+            <div class="hidden md:block">BUILD_VERSION: 2.4.1</div>
+        </div>
+    </footer>
+
+    <style>
+        .project-nav-dots {
+            display: flex;
+            justify-content: center;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+
+        .nav-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #333;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .nav-dot.active {
+            background: var(--neon-lime);
+            box-shadow: 0 0 10px var(--neon-lime);
+        }
+
+        .swipe-hint {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: #666;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.75rem;
+            margin-top: 1rem;
+            justify-content: center;
+        }
+
+        @media (min-width: 768px) {
+            .swipe-hint {
+                display: none;
+            }
+        }
+
+        .line-clamp-2 {
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+    </style>
+
+    <script>
+        // Terminal Animation
+        function initTerminal() {
+            const lines = document.querySelectorAll('.terminal-line');
+            lines.forEach((line, index) => {
+                setTimeout(() => {
+                    line.classList.add('visible');
+                }, index * 200);
+            });
+        }
+
+        window.addEventListener('load', () => {
+            setTimeout(initTerminal, 300);
+        });
+
+        // Custom Cursor
+        const isTouchDevice = window.matchMedia('(pointer: coarse)').matches;
+        
+        if (!isTouchDevice) {
+            const cursorMain = document.querySelector('.cursor-main');
+            const cursorTrail = document.querySelector('.cursor-trail');
+            
+            document.addEventListener('mousemove', (e) => {
+                if (cursorMain) {
+                    cursorMain.style.left = e.clientX - 10 + 'px';
+                    cursorMain.style.top = e.clientY - 10 + 'px';
+                }
+                
+                setTimeout(() => {
+                    if (cursorTrail) {
+                        cursorTrail.style.left = e.clientX - 20 + 'px';
+                        cursorTrail.style.top = e.clientY - 20 + 'px';
+                    }
+                }, 100);
+            });
+
+            document.querySelectorAll('a, button, .project-card').forEach(el => {
+                el.addEventListener('mouseenter', () => cursorMain?.classList.add('cursor-hover'));
+                el.addEventListener('mouseleave', () => cursorMain?.classList.remove('cursor-hover'));
+            });
+        }
+
+        // Mobile Menu
+        const hamburger = document.getElementById('hamburger');
+        const mobileMenu = document.getElementById('mobileMenu');
+        const mobileLinks = document.querySelectorAll('.mobile-link');
+
+        if (hamburger && mobileMenu) {
+            hamburger.addEventListener('click', () => {
+                hamburger.classList.toggle('active');
+                mobileMenu.classList.toggle('active');
+                document.body.style.overflow = mobileMenu.classList.contains('active') ? 'hidden' : '';
+            });
+        }
+
+        mobileLinks.forEach(link => {
+            link.addEventListener('click', () => {
+                hamburger?.classList.remove('active');
+                mobileMenu?.classList.remove('active');
+                document.body.style.overflow = '';
+            });
+        });
+
+        // Scroll Reveal
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('active');
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+        // Form Handler
+        function handleCommand(form) {
+            const btn = document.getElementById('submitBtn');
+            if (!btn) return;
+            
+            const originalText = btn.innerHTML;
+            
+            btn.innerHTML = '<span class="relative z-10 flex items-center justify-center gap-2 text-sm md:text-base">TRANSMITTING...</span>';
+            btn.disabled = true;
+            
+            setTimeout(() => {
+                btn.innerHTML = '<span class="relative z-10 flex items-center justify-center gap-2 text-sm md:text-base">DATA_RECEIVED ✓</span>';
+                btn.style.background = '#00ff00';
+                
+                setTimeout(() => {
+                    btn.innerHTML = originalText;
+                    btn.style.background = '';
+                    btn.disabled = false;
+                    form.reset();
+                }, 3000);
+            }, 2000);
+        }
+
+        // Initialize Lucide Icons
+        if (typeof lucide !== 'undefined') {
+            lucide.createIcons();
+        }
+
+        window.addEventListener('resize', () => {
+            if (window.innerWidth >= 768) {
+                hamburger?.classList.remove('active');
+                mobileMenu?.classList.remove('active');
+                document.body.style.overflow = '';
+            }
+        });
+
+        // ============================================
+        // INFINITE SCROLL PROJECT SECTION
+        // ============================================
+        
+        const projectsScroll = document.getElementById('projectsScroll');
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+        const navDots = document.querySelectorAll('.nav-dot');
+        let isScrolling = false;
+        let scrollTimeout;
+        let resizeTimeout;
+        
+        function getCardWidth() {
+            const card = projectsScroll?.querySelector('.project-card');
+            if (!card) return 350;
+            const style = window.getComputedStyle(card);
+            const marginRight = parseFloat(style.marginRight) || 0;
+            return card.offsetWidth + marginRight + 24;
+        }
+        
+        function setupInfiniteScroll() {
+            if (!projectsScroll) return;
+            
+            const scrollContainer = projectsScroll;
+            const originalCards = Array.from(scrollContainer.querySelectorAll('.project-card:not(.clone-card)'));
+            
+            const existingClones = scrollContainer.querySelectorAll('.clone-card');
+            existingClones.forEach(clone => clone.remove());
+            
+            if (originalCards.length === 0) return;
+            
+            const clonesToAdd = [];
+            for (let i = 0; i < 2; i++) {
+                originalCards.forEach(card => {
+                    const clone = card.cloneNode(true);
+                    clone.classList.add('clone-card');
+                    clonesToAdd.push(clone);
+                });
+            }
+            
+            clonesToAdd.forEach(clone => {
+                scrollContainer.appendChild(clone);
+            });
+            
+            const clonesAtStart = [];
+            for (let i = 0; i < 2; i++) {
+                [...originalCards].reverse().forEach(card => {
+                    const clone = card.cloneNode(true);
+                    clone.classList.add('clone-card');
+                    clonesAtStart.push(clone);
+                });
+            }
+            clonesAtStart.reverse().forEach(clone => {
+                scrollContainer.insertBefore(clone, scrollContainer.firstChild);
+            });
+            
+            const cardWidth = getCardWidth();
+            const clonesBeforeCount = scrollContainer.querySelectorAll('.clone-card').length / 2;
+            const targetScroll = clonesBeforeCount * cardWidth;
+            scrollContainer.scrollLeft = targetScroll;
+        }
+        
+        function handleInfiniteScroll() {
+            if (!projectsScroll || isScrolling) return;
+            
+            const scrollContainer = projectsScroll;
+            const cardWidth = getCardWidth();
+            const scrollLeft = scrollContainer.scrollLeft;
+            
+            const originalCards = Array.from(scrollContainer.querySelectorAll('.project-card:not(.clone-card)'));
+            const originalCardsCount = originalCards.length;
+            const totalOriginalWidth = originalCardsCount * cardWidth;
+            
+            let clonesBeforeCount = 0;
+            let currentElement = scrollContainer.firstElementChild;
+            while (currentElement && currentElement.classList && currentElement.classList.contains('clone-card')) {
+                clonesBeforeCount++;
+                currentElement = currentElement.nextElementSibling;
+            }
+            
+            const originalStartPosition = clonesBeforeCount * cardWidth;
+            const originalEndPosition = originalStartPosition + totalOriginalWidth;
+            const threshold = cardWidth * 0.5;
+            
+            if (scrollLeft >= originalEndPosition - threshold) {
+                isScrolling = true;
+                scrollContainer.style.scrollBehavior = 'auto';
+                scrollContainer.scrollLeft = originalStartPosition + threshold;
+                setTimeout(() => {
+                    scrollContainer.style.scrollBehavior = 'smooth';
+                    isScrolling = false;
+                }, 50);
+            } else if (scrollLeft <= originalStartPosition - threshold && scrollLeft > 0) {
+                isScrolling = true;
+                scrollContainer.style.scrollBehavior = 'auto';
+                scrollContainer.scrollLeft = originalEndPosition - threshold;
+                setTimeout(() => {
+                    scrollContainer.style.scrollBehavior = 'smooth';
+                    isScrolling = false;
+                }, 50);
+            }
+            
+            const relativeScroll = scrollContainer.scrollLeft - originalStartPosition;
+            const currentIndex = Math.round(relativeScroll / cardWidth);
+            const normalizedIndex = ((currentIndex % originalCardsCount) + originalCardsCount) % originalCardsCount;
+            
+            if (normalizedIndex >= 0 && normalizedIndex < navDots.length) {
+                navDots.forEach((dot, idx) => {
+                    dot.classList.toggle('active', idx === normalizedIndex);
+                });
+            }
+        }
+        
+        function debouncedHandleInfiniteScroll() {
+            if (scrollTimeout) clearTimeout(scrollTimeout);
+            scrollTimeout = setTimeout(() => {
+                handleInfiniteScroll();
+            }, 10);
+        }
+        
+        function scrollProjects(direction) {
+            if (!projectsScroll || isScrolling) return;
+            
+            const cardWidth = getCardWidth();
+            const currentScroll = projectsScroll.scrollLeft;
+            const newScroll = currentScroll + (direction * cardWidth);
+            
+            projectsScroll.scrollTo({
+                left: newScroll,
+                behavior: 'smooth'
+            });
+        }
+        
+        function goToSlide(index) {
+            if (!projectsScroll || isScrolling) return;
+            
+            const cardWidth = getCardWidth();
+            
+            let clonesBeforeCount = 0;
+            let currentElement = projectsScroll.firstElementChild;
+            while (currentElement && currentElement.classList && currentElement.classList.contains('clone-card')) {
+                clonesBeforeCount++;
+                currentElement = currentElement.nextElementSibling;
+            }
+            
+            const originalStartPosition = clonesBeforeCount * cardWidth;
+            const targetScroll = originalStartPosition + (index * cardWidth);
+            
+            projectsScroll.scrollTo({
+                left: targetScroll,
+                behavior: 'smooth'
+            });
+        }
+        
+        if (prevBtn && nextBtn) {
+            prevBtn.addEventListener('click', () => scrollProjects(-1));
+            nextBtn.addEventListener('click', () => scrollProjects(1));
+        }
+        
+        navDots.forEach((dot, index) => {
+            dot.addEventListener('click', () => goToSlide(index));
+        });
+        
+        if (projectsScroll) {
+            setupInfiniteScroll();
+            projectsScroll.addEventListener('scroll', () => {
+                requestAnimationFrame(debouncedHandleInfiniteScroll);
+            });
+            
+            window.addEventListener('resize', () => {
+                if (resizeTimeout) clearTimeout(resizeTimeout);
+                resizeTimeout = setTimeout(() => {
+                    const oldScrollBehavior = projectsScroll.style.scrollBehavior;
+                    projectsScroll.style.scrollBehavior = 'auto';
+                    setupInfiniteScroll();
+                    setTimeout(() => {
+                        projectsScroll.style.scrollBehavior = oldScrollBehavior;
+                    }, 100);
+                }, 200);
+            });
+            
+            let isDown = false;
+            let startX;
+            let scrollLeftStart;
+            
+            projectsScroll.addEventListener('mousedown', (e) => {
+                isDown = true;
+                projectsScroll.style.cursor = 'grabbing';
+                startX = e.pageX - projectsScroll.offsetLeft;
+                scrollLeftStart = projectsScroll.scrollLeft;
+            });
+            
+            projectsScroll.addEventListener('mouseleave', () => {
+                isDown = false;
+                projectsScroll.style.cursor = 'grab';
+            });
+            
+            projectsScroll.addEventListener('mouseup', () => {
+                isDown = false;
+                projectsScroll.style.cursor = 'grab';
+            });
+            
+            projectsScroll.addEventListener('mousemove', (e) => {
+                if (!isDown) return;
+                e.preventDefault();
+                const x = e.pageX - projectsScroll.offsetLeft;
+                const walk = (x - startX) * 1.5;
+                projectsScroll.scrollLeft = scrollLeftStart - walk;
+            });
+            
+            let touchStartX = 0;
+            let touchEndX = 0;
+            
+            projectsScroll.addEventListener('touchstart', (e) => {
+                touchStartX = e.changedTouches[0].screenX;
+            });
+            
+            projectsScroll.addEventListener('touchend', (e) => {
+                touchEndX = e.changedTouches[0].screenX;
+                const swipeThreshold = 50;
+                const diff = touchStartX - touchEndX;
+                
+                if (Math.abs(diff) > swipeThreshold) {
+                    if (diff > 0) {
+                        scrollProjects(1);
+                    } else {
+                        scrollProjects(-1);
+                    }
+                }
+            });
+            
+            setTimeout(() => {
+                handleInfiniteScroll();
+            }, 100);
+        }
+    </script>
+</body>
+</html>
