@@ -1,1605 +1,1071 @@
 <!DOCTYPE html>
-<html lang="en" class="scroll-smooth">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
-    <title>Samy Zaidi | Business Systems Architect</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://unpkg.com/lucide@latest"></script>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Space+Grotesk:wght@300;500;700&display=swap');
-
-        :root {
-            --neon-lime: #ccff00;
-            --signal-red: #ff3366;
-            --cyan-glow: #00f0ff;
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Samy Zaidi | Laravel Full-Stack Portfolio</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+    <script type="importmap">
+        {
+            "imports": {
+                "three": "https://unpkg.com/three@0.128.0/build/three.module.js",
+                "three/addons/": "https://unpkg.com/three@0.128.0/examples/jsm/"
+            }
         }
-
+    </script>
+    <style>
         * {
+            margin: 0;
+            padding: 0;
             box-sizing: border-box;
             -webkit-tap-highlight-color: transparent;
         }
 
+        html {
+            scroll-behavior: smooth;
+        }
+
         body {
-            font-family: 'Space Grotesk', sans-serif;
-            background: #0a0a0a;
-            color: #fff;
+            font-family: 'Inter', sans-serif;
+            background: #050510;
+            color: #e2e8f0;
             overflow-x: hidden;
-            -webkit-font-smoothing: antialiased;
         }
 
-        @media (max-width: 768px) {
-            body { cursor: auto !important; }
-            .cursor-main, .cursor-trail { display: none !important; }
-        }
-
-        .cursor-main {
-            width: 20px;
-            height: 20px;
-            border: 2px solid var(--neon-lime);
-            position: fixed;
-            pointer-events: none;
-            z-index: 9999;
-            mix-blend-mode: difference;
-            transition: transform 0.1s;
-            clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
-        }
-
-        .cursor-trail {
-            width: 40px;
-            height: 40px;
-            border: 1px solid rgba(204, 255, 0, 0.3);
-            position: fixed;
-            pointer-events: none;
-            z-index: 9998;
-            border-radius: 50%;
-            transition: transform 0.3s ease-out;
-        }
-
-        .cursor-hover {
-            transform: scale(2) rotate(45deg);
-            background: var(--neon-lime);
-            mix-blend-mode: difference;
-        }
-
-        .scanlines {
+        #canvas-wrapper {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
+            z-index: 0;
             pointer-events: none;
-            z-index: 9997;
-            opacity: 0.15;
-            background: linear-gradient(
-                to bottom,
-                rgba(255,255,255,0),
-                rgba(255,255,255,0) 50%,
-                rgba(0,0,0,0.1) 50%,
-                rgba(0,0,0,0.1)
-            );
-            background-size: 100% 4px;
         }
 
-        @media (max-width: 768px) {
-            .scanlines { opacity: 0.05; }
+        #canvas-3d {
+            width: 100%;
+            height: 100%;
         }
 
-        .glitch {
+        .content {
             position: relative;
-            display: inline-block;
+            z-index: 10;
         }
 
-        .glitch::before,
-        .glitch::after {
-            content: attr(data-text);
-            position: absolute;
+        .glass-card {
+            background: rgba(15, 23, 42, 0.7);
+            backdrop-filter: blur(12px);
+            border-radius: 2rem;
+            border: 1px solid rgba(56, 189, 248, 0.25);
+        }
+
+        .container {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 0 40px;
+        }
+
+        /* Navigation */
+        .navbar {
+            position: fixed;
             top: 0;
-            left: 0;
             width: 100%;
-            height: 100%;
+            padding: 20px 0;
+            background: rgba(10, 12, 21, 0.85);
+            backdrop-filter: blur(16px);
+            border-bottom: 1px solid rgba(56, 189, 248, 0.25);
+            z-index: 1000;
+            transition: padding 0.3s ease;
         }
 
-        .glitch::before {
-            left: 2px;
-            text-shadow: -2px 0 var(--signal-red);
-            clip: rect(24px, 550px, 90px, 0);
-            animation: glitch-anim-2 3s infinite linear alternate-reverse;
+        .navbar.scrolled {
+            padding: 12px 0;
+            background: rgba(10, 12, 21, 0.95);
         }
 
-        .glitch::after {
-            left: -2px;
-            text-shadow: -2px 0 var(--cyan-glow);
-            clip: rect(85px, 550px, 140px, 0);
-            animation: glitch-anim 2.5s infinite linear alternate-reverse;
-        }
-
-        @keyframes glitch-anim {
-            0% { clip: rect(10px, 9999px, 85px, 0); }
-            20% { clip: rect(63px, 9999px, 130px, 0); }
-            40% { clip: rect(25px, 9999px, 15px, 0); }
-            60% { clip: rect(88px, 9999px, 95px, 0); }
-            80% { clip: rect(45px, 9999px, 60px, 0); }
-            100% { clip: rect(15px, 9999px, 110px, 0); }
-        }
-
-        @keyframes glitch-anim-2 {
-            0% { clip: rect(65px, 9999px, 100px, 0); }
-            20% { clip: rect(20px, 9999px, 45px, 0); }
-            40% { clip: rect(90px, 9999px, 120px, 0); }
-            60% { clip: rect(35px, 9999px, 70px, 0); }
-            80% { clip: rect(75px, 9999px, 15px, 0); }
-            100% { clip: rect(50px, 9999px, 95px, 0); }
-        }
-
-        .terminal {
-            background: #111;
-            border: 1px solid #333;
-            border-radius: 8px;
-            overflow: hidden;
-            font-family: 'JetBrains Mono', monospace;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
-        }
-
-        .terminal-header {
-            background: #1a1a1a;
-            padding: 8px 12px;
+        .nav-container {
             display: flex;
-            gap: 6px;
-            border-bottom: 1px solid #333;
+            justify-content: space-between;
+            align-items: center;
         }
 
-        .terminal-btn {
-            width: 12px;
-            height: 12px;
-            border-radius: 50%;
-        }
-
-        .terminal-body {
-            padding: 16px;
-            font-size: 12px;
-            line-height: 1.6;
-            overflow-x: auto;
-            -webkit-overflow-scrolling: touch;
-        }
-
-        @media (min-width: 768px) {
-            .terminal-body {
-                padding: 20px;
-                font-size: 14px;
-            }
-        }
-
-        .terminal-line {
-            opacity: 0;
-            transform: translateX(-20px);
+        .logo {
+            font-size: 1.8rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #38bdf8, #a855f7);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
             white-space: nowrap;
         }
 
-        .terminal-line.visible {
-            opacity: 1;
-            transform: translateX(0);
+        .nav-links {
+            display: flex;
+            gap: 2.5rem;
+            align-items: center;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            font-weight: 500;
+            color: #cbd5e1;
+            transition: 0.2s;
+            font-size: 0.95rem;
+        }
+
+        .nav-links a:hover { color: #38bdf8; }
+
+        .menu-toggle {
+            display: none;
+            font-size: 1.5rem;
+            background: none;
+            border: none;
+            color: #38bdf8;
+            cursor: pointer;
+            padding: 8px;
+            border-radius: 8px;
+        }
+
+        /* Buttons */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 12px 28px;
+            font-weight: 600;
+            border-radius: 40px;
+            transition: all 0.3s;
+            text-decoration: none;
+            cursor: pointer;
+            border: none;
+            font-size: 0.95rem;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #38bdf8, #3b82f6);
+            color: white;
+            box-shadow: 0 4px 15px rgba(56, 189, 248, 0.3);
+        }
+
+        .btn-primary:hover { transform: translateY(-3px); box-shadow: 0 8px 25px rgba(56, 189, 248, 0.4); }
+
+        .btn-outline {
+            background: transparent;
+            border: 1.5px solid #38bdf8;
+            color: #38bdf8;
+        }
+
+        .btn-outline:hover { background: rgba(56, 189, 248, 0.1); transform: translateY(-3px); }
+
+        /* Hero */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            padding-top: 100px;
+            padding-bottom: 60px;
+        }
+
+        .hero-grid {
+            display: grid;
+            grid-template-columns: 1.2fr 0.8fr;
+            gap: 3rem;
+            align-items: center;
+        }
+
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(56, 189, 248, 0.15);
+            border: 1px solid rgba(56, 189, 248, 0.4);
+            border-radius: 40px;
+            padding: 8px 18px;
+            font-size: 0.8rem;
+            color: #38bdf8;
+            margin-bottom: 24px;
+            width: fit-content;
+        }
+
+        .hero h1 {
+            font-size: clamp(2rem, 5vw, 3.5rem);
+            font-weight: 800;
+            line-height: 1.15;
+            background: linear-gradient(to right, #fff, #38bdf8, #a855f7);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+        }
+
+        .hero-desc {
+            font-size: clamp(1rem, 2vw, 1.15rem);
+            color: #94a3b8;
+            margin: 24px 0 32px;
+            line-height: 1.7;
+            max-width: 540px;
+        }
+
+        .tech-stack {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin: 28px 0;
+        }
+
+        .tech-pill {
+            background: rgba(56, 189, 248, 0.12);
+            padding: 6px 16px;
+            border-radius: 40px;
+            font-size: 0.8rem;
+            border: 1px solid rgba(56, 189, 248, 0.2);
+            white-space: nowrap;
+        }
+
+        .btn-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 14px;
+            margin-top: 8px;
+        }
+
+        .stats-row {
+            display: flex;
+            gap: 2.5rem;
+            margin-top: 40px;
+            flex-wrap: wrap;
+        }
+
+        .stat-item h3 {
+            font-size: clamp(1.6rem, 3vw, 2rem);
+            font-weight: 700;
+            color: #38bdf8;
+        }
+
+        .stat-item p {
+            font-size: 0.9rem;
+            color: #94a3b8;
+            margin-top: 4px;
+        }
+
+        /* Section Headings */
+        .section-heading {
+            text-align: center;
+            margin-bottom: 56px;
+            padding-top: 40px;
+        }
+
+        .section-heading .sub {
+            color: #38bdf8;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            font-size: 0.8rem;
+            margin-bottom: 12px;
+            font-weight: 600;
+        }
+
+        .section-heading h2 {
+            font-size: clamp(1.6rem, 4vw, 2.3rem);
+            font-weight: 700;
+        }
+
+        /* Services Grid */
+        .services-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 28px;
+            margin: 50px 0;
+        }
+
+        .service-card {
+            background: rgba(15, 23, 42, 0.6);
+            backdrop-filter: blur(10px);
+            padding: 32px;
+            border-radius: 28px;
+            border: 1px solid rgba(56, 189, 248, 0.15);
             transition: all 0.3s ease;
         }
 
-        .prompt { color: var(--neon-lime); }
-        .command { color: #fff; }
-        .output { color: #888; }
-        .success { color: var(--neon-lime); }
-
-        /* Projects Section with Infinite Scroll */
-        .projects-wrapper {
-            position: relative;
+        .service-card:hover {
+            transform: translateY(-8px);
+            border-color: rgba(56, 189, 248, 0.5);
         }
 
-        .projects-scroll {
+        .service-icon { font-size: 2.5rem; color: #38bdf8; margin-bottom: 20px; }
+
+        .service-card h3 { font-size: 1.25rem; margin-bottom: 12px; }
+        .service-card p { color: #94a3b8; line-height: 1.6; font-size: 0.95rem; }
+
+        /* ========== FIXED: PROJECT SECTION WITH RESPONSIVE IMAGES ========== */
+        .projects-horizontal-section {
+            margin: 80px 0;
+            overflow-x: hidden;
+        }
+
+        .projects-scroll-container {
             display: flex;
-            gap: 1.5rem;
             overflow-x: auto;
             scroll-snap-type: x mandatory;
-            -webkit-overflow-scrolling: touch;
-            padding: 1rem 0.5rem;
-            scrollbar-width: none;
-            -ms-overflow-style: none;
-            scroll-behavior: smooth;
-            overflow-x: scroll;
+            gap: 24px;
+            padding: 20px 40px 40px 40px;
             cursor: grab;
+            scroll-behavior: smooth;
+            scrollbar-width: thin;
+            scrollbar-color: #38bdf8 rgba(56, 189, 248, 0.1);
         }
 
-        .projects-scroll:active {
-            cursor: grabbing;
-        }
+        .projects-scroll-container::-webkit-scrollbar { height: 6px; }
+        .projects-scroll-container::-webkit-scrollbar-track { background: rgba(56, 189, 248, 0.1); border-radius: 10px; }
+        .projects-scroll-container::-webkit-scrollbar-thumb { background: #38bdf8; border-radius: 10px; }
 
-        .projects-scroll::-webkit-scrollbar {
-            display: none;
-        }
-
-        .project-card {
-            flex: 0 0 85%;
-            max-width: 380px;
-            background: #111;
-            border: 2px solid #333;
-            border-radius: 12px;
-            overflow: hidden;
+        .project-horizontal-card {
+            max-width: 340px;
+            min-width: 280px;
+            background: rgba(15, 23, 42, 0.7);
+            backdrop-filter: blur(12px);
+            border-radius: 28px;
+            border: 1px solid rgba(56, 189, 248, 0.2);
             scroll-snap-align: start;
             transition: all 0.3s ease;
-            position: relative;
-        }
-
-        @media (min-width: 768px) {
-            .project-card {
-                flex: 0 0 350px;
-                max-width: 350px;
-            }
-        }
-
-        .project-card:hover {
-            border-color: var(--neon-lime);
-            transform: translateY(-4px);
-        }
-
-        .project-card::before {
-            content: '';
-            position: absolute;
-            inset: 0;
-            background: var(--neon-lime);
-            transform: translate(4px, 4px);
-            border-radius: 12px;
-            z-index: -1;
-            opacity: 0;
-            transition: opacity 0.3s;
-        }
-
-        .project-card:hover::before {
-            opacity: 0.3;
-        }
-
-        .project-image {
-            width: 100%;
-            height: 180px;
-            background: linear-gradient(135deg, #1a1a1a 0%, #0a0a0a 100%);
-            border-bottom: 1px solid #333;
-            position: relative;
+            flex-shrink: 0;
             overflow: hidden;
         }
 
-        .project-image img {
+        .project-horizontal-card:hover {
+            transform: translateY(-10px) scale(1.02);
+            border-color: rgba(56, 189, 248, 0.6);
+        }
+
+        /* FIXED: Responsive project images - perfect scaling on all devices */
+        .project-img {
+            width: 100%;
+            height: 180px;
+            background: linear-gradient(135deg, #0f172a, #1e1b4b);
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .project-img img {
             width: 100%;
             height: 100%;
             object-fit: cover;
-            opacity: 0.8;
-            transition: opacity 0.3s;
-        }
-
-        .project-card:hover .project-image img {
-            opacity: 1;
-        }
-
-        .project-image-placeholder {
-            width: 100%;
-            height: 100%;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            color: #444;
-        }
-
-        .project-content {
-            padding: 1.25rem;
-        }
-
-        .project-number {
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 2.5rem;
-            font-weight: 700;
-            color: #333;
-            line-height: 1;
-            margin-bottom: 0.5rem;
-        }
-
-        .project-card:hover .project-number {
-            color: var(--neon-lime);
-        }
-
-        /* Navigation Arrows */
-        .nav-arrow {
-            position: absolute;
-            top: 50%;
-            transform: translateY(-50%);
-            width: 48px;
-            height: 48px;
-            background: rgba(10, 10, 10, 0.9);
-            border: 2px solid #333;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            z-index: 10;
-            transition: all 0.3s ease;
-            color: #fff;
-        }
-
-        .nav-arrow:hover:not(:disabled) {
-            border-color: var(--neon-lime);
-            color: var(--neon-lime);
-            background: rgba(204, 255, 0, 0.1);
-        }
-
-        .nav-arrow:active:not(:disabled) {
-            transform: translateY(-50%) scale(0.95);
-        }
-
-        .nav-arrow:disabled {
-            opacity: 0.3;
-            cursor: not-allowed;
-            border-color: #222;
-            color: #444;
-        }
-
-        .nav-arrow.prev {
-            left: -10px;
-        }
-
-        .nav-arrow.next {
-            right: -10px;
-        }
-
-        @media (max-width: 768px) {
-            .nav-arrow {
-                display: none;
-            }
-        }
-
-        .marquee-container {
-            overflow: hidden;
-            white-space: nowrap;
-            position: relative;
-        }
-
-        .marquee-content {
-            display: inline-flex;
-            animation: scroll 20s linear infinite;
-        }
-
-        @keyframes scroll {
-            0% { transform: translateX(0); }
-            100% { transform: translateX(-50%); }
-        }
-
-        .grid-bg {
-            background-image: 
-                linear-gradient(rgba(204, 255, 0, 0.03) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(204, 255, 0, 0.03) 1px, transparent 1px);
-            background-size: 50px 50px;
-        }
-
-        .noise-bg {
-            position: relative;
-        }
-
-        .noise-bg::before {
-            content: '';
-            position: absolute;
-            inset: 0;
-            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
-            opacity: 0.05;
-            pointer-events: none;
-        }
-
-        .status-dot {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            display: inline-block;
-            animation: pulse 2s infinite;
-        }
-
-        .status-online { 
-            background: var(--neon-lime); 
-            box-shadow: 0 0 10px var(--neon-lime); 
-        }
-
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.5; }
-        }
-
-        .reveal {
-            opacity: 0;
-            transform: translateY(30px);
-            transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        .reveal.active {
-            opacity: 1;
-            transform: translateY(0);
-        }
-
-        .diagonal-lines {
-            background: repeating-linear-gradient(
-                45deg,
-                transparent,
-                transparent 10px,
-                rgba(204, 255, 0, 0.03) 10px,
-                rgba(204, 255, 0, 0.03) 20px
-            );
-        }
-
-        .mobile-menu {
-            position: fixed;
-            inset: 0;
-            background: rgba(10, 10, 10, 0.98);
-            backdrop-filter: blur(20px);
-            z-index: 40;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            gap: 2rem;
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.3s ease;
-        }
-
-        .mobile-menu.active {
-            opacity: 1;
-            pointer-events: all;
-        }
-
-        .mobile-menu a {
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 1.5rem;
-            color: #fff;
-            text-decoration: none;
-            padding: 1rem;
-            border: 2px solid transparent;
-            transition: all 0.3s;
-        }
-
-        .mobile-menu a:hover {
-            border-color: var(--neon-lime);
-            color: var(--neon-lime);
-        }
-
-        .hamburger {
-            width: 30px;
-            height: 20px;
-            position: relative;
-            cursor: pointer;
-            z-index: 50;
-        }
-
-        .hamburger span {
+            object-position: center;
             display: block;
-            position: absolute;
-            height: 2px;
-            width: 100%;
-            background: #fff;
-            transition: all 0.3s ease;
         }
 
-        .hamburger span:nth-child(1) { top: 0; }
-        .hamburger span:nth-child(2) { top: 50%; transform: translateY(-50%); }
-        .hamburger span:nth-child(3) { bottom: 0; }
-
-        .hamburger.active span:nth-child(1) {
-            top: 50%;
-            transform: translateY(-50%) rotate(45deg);
+        /* Fallback when image fails to load */
+        .project-img img[src=""] {
+            display: none;
         }
 
-        .hamburger.active span:nth-child(2) {
-            opacity: 0;
+        .project-content { padding: 24px; }
+        .project-content h3 { font-size: 1.15rem; margin-bottom: 8px; }
+        .project-content p { color: #94a3b8; font-size: 0.9rem; line-height: 1.5; margin-bottom: 12px; display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden; }
+
+        .project-tech {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin: 16px 0;
         }
 
-        .hamburger.active span:nth-child(3) {
-            bottom: 50%;
-            transform: translateY(50%) rotate(-45deg);
+        .project-tech span {
+            background: rgba(56, 189, 248, 0.12);
+            padding: 4px 12px;
+            border-radius: 40px;
+            font-size: 0.7rem;
+            white-space: nowrap;
         }
 
-        .touch-btn {
-            min-height: 48px;
-            min-width: 48px;
+        .scroll-hint {
+            text-align: center;
+            margin-top: 20px;
+            color: #94a3b8;
+            font-size: 0.85rem;
         }
 
-        ::-webkit-scrollbar {
-            width: 6px;
-            background: #0a0a0a;
+        .scroll-hint i { animation: bounceRight 1.5s infinite; display: inline-block; }
+
+        @keyframes bounceRight { 
+            0%,100% { transform: translateX(0); } 
+            50% { transform: translateX(8px); } 
         }
 
-        ::-webkit-scrollbar-thumb {
-            background: #333;
-            border-radius: 3px;
+        /* About + Contact */
+        .about-wrapper {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 48px;
+            background: rgba(15, 23, 42, 0.5);
+            backdrop-filter: blur(10px);
+            border-radius: 40px;
+            padding: 48px;
+            margin: 50px 0;
+            border: 1px solid rgba(56, 189, 248, 0.15);
         }
 
-        ::-webkit-scrollbar-thumb:hover {
-            background: var(--neon-lime);
+        .about-text { flex: 1; min-width: 280px; }
+        .skillset { flex: 1; min-width: 280px; }
+
+        .skill-badge {
+            display: inline-block;
+            background: rgba(56, 189, 248, 0.12);
+            padding: 8px 18px;
+            border-radius: 40px;
+            margin: 6px;
+            font-size: 0.85rem;
+            border: 1px solid rgba(56, 189, 248, 0.15);
+            transition: all 0.2s;
         }
 
-        ::selection {
-            background: var(--neon-lime);
-            color: #000;
+        .skill-badge:hover {
+            background: rgba(56, 189, 248, 0.2);
+            transform: translateY(-2px);
         }
 
-        input:focus, textarea:focus, select:focus {
-            outline: none;
-            border-color: var(--neon-lime) !important;
+        .contact-section {
+            background: linear-gradient(135deg, rgba(15, 23, 42, 0.8), rgba(30, 27, 75, 0.6));
+            backdrop-filter: blur(12px);
+            border-radius: 48px;
+            padding: 56px 48px;
+            margin: 60px 0;
+            text-align: center;
+            border: 1px solid rgba(56, 189, 248, 0.3);
         }
 
-        html {
-            -webkit-text-size-adjust: 100%;
-            scroll-behavior: smooth;
+        .contact-item {
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 12px 28px;
+            border-radius: 60px;
+            text-decoration: none;
+            color: #e2e8f0;
+            margin: 8px 10px;
+            transition: all 0.2s;
+            font-size: 0.9rem;
         }
 
-        /* ========== ADDED MOBILE-ONLY STYLES ========== */
-        @media (max-width: 768px) {
-            /* Better spacing for mobile */
-            .container-padding {
-                padding-left: 1rem;
-                padding-right: 1rem;
+        .contact-item:hover { background: rgba(56, 189, 248, 0.2); color: #38bdf8; }
+
+        footer {
+            text-align: center;
+            padding: 32px 20px;
+            border-top: 1px solid rgba(56, 189, 248, 0.15);
+            font-size: 0.9rem;
+            color: #64748b;
+        }
+
+        .scroll-progress {
+            position: fixed;
+            bottom: 25px;
+            right: 25px;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: rgba(15, 23, 42, 0.9);
+            backdrop-filter: blur(8px);
+            border: 2px solid #38bdf8;
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: #38bdf8;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .scroll-progress:hover { transform: scale(1.1); }
+
+        .hero-visual .glass-card { padding: 32px; text-align: center; }
+        .hero-visual pre {
+            background: #0f172a;
+            color: #e2e8f0;
+            border-radius: 20px;
+            padding: 16px;
+            margin-top: 20px;
+            text-align: left;
+            font-size: 0.85rem;
+            overflow-x: auto;
+        }
+
+        /* ========== MOBILE RESPONSIVENESS ========== */
+        @media (max-width: 900px) {
+            .container { padding: 0 24px; }
+            
+            .hero-grid { 
+                grid-template-columns: 1fr; 
+                text-align: center; 
             }
             
-            /* Hero text size adjustment for mobile */
-            h1 {
-                font-size: 2.5rem !important;
-                line-height: 1.2 !important;
-            }
+            .hero-badge { margin-left: auto; margin-right: auto; }
+            .hero-desc { margin-left: auto; margin-right: auto; }
+            .tech-stack, .stats-row, .btn-group { justify-content: center; }
             
-            /* Smaller padding on mobile */
-            section {
-                padding-top: 2rem;
-                padding-bottom: 2rem;
-            }
-            
-            /* Better form inputs on mobile - prevents zoom */
-            input, select, textarea {
-                font-size: 16px !important;
-            }
-            
-            /* Project cards full width on mobile */
-            .project-card {
-                flex: 0 0 90%;
-                max-width: 90%;
-            }
-            
-            /* Stack section mobile adjustment */
-            #stack .grid {
-                gap: 2rem;
-            }
-            
-            /* Services section mobile */
-            #services .grid {
-                gap: 1rem;
-            }
-            
-            /* Contact section mobile spacing */
-            #contact .grid {
-                gap: 0.75rem;
-            }
-            
-            /* Footer mobile */
-            footer .flex {
-                flex-direction: column;
+            .nav-links { 
+                display: none; 
+                flex-direction: column; 
+                width: 100%; 
+                background: rgba(10,12,21,0.98); 
+                position: absolute; 
+                top: 70px; 
+                left: 0; 
+                padding: 24px; 
                 text-align: center;
-                gap: 0.75rem;
+                gap: 1.5rem;
+                border-bottom: 1px solid rgba(56, 189, 248, 0.2);
+                backdrop-filter: blur(20px);
             }
             
-            /* Marquee text size */
-            .marquee-content {
-                font-size: 0.875rem;
+            .nav-links.show { display: flex; }
+            .menu-toggle { display: block; }
+            
+            .hero { padding-top: 90px; padding-bottom: 40px; min-height: auto; }
+            .hero-visual { order: -1; margin-bottom: 20px; }
+            .hero-visual .glass-card { padding: 24px; }
+            .hero-visual pre { font-size: 0.75rem; padding: 12px; }
+            
+            .stats-row { gap: 1.5rem; justify-content: center; }
+            .stat-item { text-align: center; }
+            
+            .about-wrapper { padding: 28px; gap: 32px; }
+            .contact-section { padding: 40px 24px; border-radius: 32px; }
+            
+            /* Fixed: Responsive project cards on mobile */
+            .project-horizontal-card { 
+                max-width: 280px;
+                min-width: 260px;
             }
             
-            /* Logs section mobile */
-            #logs .space-y-3 {
-                gap: 0.75rem;
+            .project-img {
+                height: 150px;
             }
             
-            /* Stats section mobile */
-            #stack .border {
-                padding: 1.5rem;
+            .projects-scroll-container {
+                padding: 16px 20px 32px 20px;
+                gap: 16px;
             }
             
-            #stack .text-5xl {
-                font-size: 2rem;
+            .services-grid { gap: 20px; }
+            .service-card { padding: 24px; }
+            
+            .scroll-progress {
+                width: 44px;
+                height: 44px;
+                font-size: 0.75rem;
+                bottom: 16px;
+                right: 16px;
             }
+        }
+
+        @media (max-width: 480px) {
+            .logo { font-size: 1.4rem; }
+            .hero { padding-top: 80px; }
+            .hero h1 { font-size: 1.8rem; }
+            .hero-badge { font-size: 0.75rem; padding: 6px 14px; }
+            
+            .btn {
+                padding: 10px 20px;
+                font-size: 0.9rem;
+                width: 100%;
+            }
+            
+            .btn-group { flex-direction: column; width: 100%; }
+            
+            .tech-pill { font-size: 0.75rem; padding: 5px 12px; }
+            .stat-item h3 { font-size: 1.4rem; }
+            
+            .section-heading { margin-bottom: 36px; }
+            .section-heading h2 { font-size: 1.4rem; }
+            
+            .service-icon { font-size: 2rem; }
+            .service-card h3 { font-size: 1.1rem; }
+            
+            /* Fixed: Even smaller project cards on very small screens */
+            .project-horizontal-card {
+                max-width: 260px;
+                min-width: 240px;
+            }
+            
+            .project-img {
+                height: 140px;
+            }
+            
+            .project-content { padding: 16px; }
+            .project-content h3 { font-size: 1rem; }
+            .project-content p { font-size: 0.8rem; }
+            
+            .about-wrapper { padding: 20px; border-radius: 24px; }
+            .skill-badge { font-size: 0.8rem; padding: 6px 14px; margin: 4px; }
+            
+            .contact-section { padding: 32px 16px; border-radius: 24px; margin: 40px 0; }
+            .contact-item { 
+                width: calc(100% - 8px);
+                margin: 6px 4px;
+                justify-content: center;
+                padding: 10px 16px;
+                font-size: 0.85rem;
+            }
+            
+            footer { padding: 24px 16px; font-size: 0.8rem; }
+        }
+
+        /* Touch device optimizations */
+        @media (hover: none) {
+            .service-card:hover, .project-horizontal-card:hover { transform: none; }
+            .btn:hover { transform: none; }
         }
     </style>
 </head>
-<body class="noise-bg">
+<body>
 
-    <!-- Custom Cursor - Desktop Only -->
-    <div class="cursor-main hidden md:block"></div>
-    <div class="cursor-trail hidden md:block"></div>
-
-    <!-- Scanlines -->
-    <div class="scanlines"></div>
-
-    <!-- Navigation -->
-    <nav class="fixed top-0 w-full z-50 border-b border-white/10 bg-black/90 backdrop-blur-md">
-        <div class="max-w-7xl mx-auto px-4 md:px-6 py-3 md:py-4 flex justify-between items-center">
-            <div class="flex items-center gap-2 md:gap-3">
-                <div class="w-2 h-2 md:w-3 md:h-3 rounded-full bg-[#ccff00] animate-pulse"></div>
-                <span class="font-mono text-xs md:text-sm tracking-wider truncate">Samy Zaidi</span>
-            </div>
-
-            <div class="hidden md:flex items-center gap-8 font-mono text-xs tracking-wider">
-                <a href="#work" class="hover:text-[#ccff00] transition-colors py-2">[WORK]</a>
-                <a href="#stack" class="hover:text-[#ccff00] transition-colors py-2">[STACK]</a>
-                <a href="#services" class="hover:text-[#ccff00] transition-colors py-2">[SERVICES]</a>
-                <a href="#logs" class="hover:text-[#ccff00] transition-colors py-2">[LOGS]</a>
-                <a href="#contact" class="px-4 py-2 border border-[#ccff00] text-[#ccff00] hover:bg-[#ccff00] hover:text-black transition-all">[INIT_CONTACT]</a>
-            </div>
-
-            <!-- Mobile Hamburger -->
-            <div class="hamburger md:hidden touch-btn flex flex-col justify-center" id="hamburger">
-                <span></span>
-                <span></span>
-                <span></span>
-            </div>
-        </div>
-    </nav>
-
-    <!-- Mobile Menu -->
-    <div class="mobile-menu" id="mobileMenu">
-        <a href="#work" class="mobile-link">[WORK]</a>
-        <a href="#stack" class="mobile-link">[STACK]</a>
-        <a href="#services" class="mobile-link">[SERVICES]</a>
-        <a href="#logs" class="mobile-link">[LOGS]</a>
-        <a href="#contact" class="mobile-link text-[#ccff00]">[INIT_CONTACT]</a>
+    <div id="canvas-wrapper">
+        <canvas id="canvas-3d"></canvas>
     </div>
 
-    <!-- Hero Section (REWRITTEN - AGENCY POSITIONING) -->
-    <section class="min-h-screen flex items-center justify-center relative grid-bg pt-20">
-        <div class="max-w-7xl mx-auto px-6 grid lg:grid-cols-2 gap-12 items-center">
-            
-            <!-- LEFT -->
-            <div class="space-y-8">
-                <div class="font-mono text-[10px] text-gray-500 tracking-widest border-l-2 border-[#ccff00] pl-4">
-                    SYSTEM_STATUS: ACTIVE<br>
-                    BUILD_TYPE: BUSINESS_INFRASTRUCTURE<br>
-                    DEPLOYMENT: CLIENT_PRODUCTION_ENV
-                </div>
-
-                <h1 class="text-5xl md:text-7xl font-bold leading-none">
-                    WE BUILD<br>
-                    <span class="text-[#ccff00]">BUSINESS SYSTEMS</span><br>
-                    NOT WEBSITES
-                </h1>
-
-                <p class="text-gray-400 text-base md:text-lg max-w-xl leading-relaxed border-l border-gray-800 pl-4">
-                    We design and deploy full-stack business infrastructure: e-commerce engines, automation systems, CRM platforms, and internal tools that increase revenue and eliminate manual work.
-                </p>
-
-                <div class="font-mono text-xs text-gray-500 border-l border-gray-800 pl-4">
-                    SPECIALIZATION:<br>
-                    Laravel Architecture • Business Automation • E-commerce Systems • CRM Platforms • API Integrations
-                </div>
-
-                <div class="flex flex-col sm:flex-row gap-4">
-                    <a href="#services" class="px-8 py-4 bg-[#ccff00] text-black font-bold hover:bg-white transition text-center">
-                        VIEW_SYSTEMS
-                    </a>
-                    <a href="#contact" class="px-8 py-4 border border-gray-700 hover:border-[#ccff00] hover:text-[#ccff00] transition text-center font-mono text-sm">
-                        REQUEST_BUILD
-                    </a>
+    <div class="content">
+        <nav class="navbar" id="navbar">
+            <div class="container nav-container">
+                <div class="logo">&lt;Samy/&gt;</div>
+                <button class="menu-toggle" id="mobileMenuBtn" aria-label="Toggle menu">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <div class="nav-links" id="navLinks">
+                    <a href="#home">Home</a>
+                    <a href="#services">Services</a>
+                    <a href="#projects">Projects</a>
+                    <a href="#about">About</a>
+                    <a href="#contact">Contact</a>
                 </div>
             </div>
+        </nav>
 
-            <!-- RIGHT - Terminal -->
-            <div class="terminal reveal">
-                <div class="terminal-header">
-                    <div class="terminal-btn bg-[#ff3366]"></div>
-                    <div class="terminal-btn bg-[#ffcc00]"></div>
-                    <div class="terminal-btn bg-[#ccff00]"></div>
-                    <span class="ml-auto text-[10px] md:text-xs text-gray-500 font-mono">bash — 80x24</span>
+        <section id="home" class="hero">
+            <div class="container hero-grid">
+                <div class="hero-content">
+                    <div class="hero-badge"><i class="fab fa-laravel"></i> Laravel Full-Stack Architect</div>
+                    <h1>Building scalable web apps with <span style="color:#38bdf8;">Laravel & Modern Stack</span></h1>
+                    <p class="hero-desc">8+ years of crafting robust backends, elegant APIs, and dynamic frontends. I turn complex ideas into seamless digital products.</p>
+                    <div class="tech-stack">
+                        <span class="tech-pill">Laravel</span>
+                        <span class="tech-pill">PHP 8+</span>
+                        <span class="tech-pill">Livewire</span>
+                        <span class="tech-pill">Vue.js</span>
+                        <span class="tech-pill">MySQL/PostgreSQL</span>
+                        <span class="tech-pill">REST/GraphQL</span>
+                    </div>
+                    <div class="btn-group">
+                        <a href="#projects" class="btn btn-primary"><i class="fas fa-eye"></i> View Portfolio</a>
+                        <a href="#contact" class="btn btn-outline"><i class="fas fa-paper-plane"></i> Hire Me</a>
+                    </div>
+                    <div class="stats-row">
+                        <div class="stat-item"><h3 id="yearCounter">0+</h3><p>Years Exp</p></div>
+                        <div class="stat-item"><h3 id="projectCounter">0+</h3><p>Projects</p></div>
+                        <div class="stat-item"><h3 id="clientCounter">0%</h3><p>Satisfaction</p></div>
+                    </div>
                 </div>
-                <div class="terminal-body" id="terminalContent">
-                    <div class="terminal-line"><span class="prompt">➜</span> <span class="command">whoami</span></div>
-                    <div class="terminal-line output">samy_zaidi_laravel_architect</div>
-                    
-                    <div class="terminal-line"><span class="prompt">➜</span> <span class="command">cat specialization.txt</span></div>
-                    <div class="terminal-line output">High-conversion e-commerce platforms</div>
-                    <div class="terminal-line output">Business automation systems</div>
-                    <div class="terminal-line output">Admin dashboards & CRM tools</div>
-                    
-                    <div class="terminal-line"><span class="prompt">➜</span> <span class="command">ls -la ./stack/</span></div>
-                    <div class="terminal-line output">drwxr-xr-x  laravel/</div>
-                    <div class="terminal-line output">drwxr-xr-x  filament/</div>
-                    <div class="terminal-line output">drwxr-xr-x  livewire/</div>
-                    <div class="terminal-line output">drwxr-xr-x  tailwind/</div>
-                    
-                    <div class="terminal-line"><span class="prompt">➜</span> <span class="command">ping availability.status</span></div>
-                    <div class="terminal-line success">64 bytes from Q2_2026: ttl=50 time=0.8ms STATUS=AVAILABLE</div>
-                    
-                    <div class="terminal-line"><span class="prompt">➜</span> <span class="command blink">_</span></div>
+                <div class="hero-visual">
+                    <div class="glass-card">
+                        <i class="fab fa-laravel" style="font-size: 4rem; color: #ff2d20;"></i>
+                        <pre><code>// Artisan at heart
+class Portfolio extends Developer {
+    public function build(): string {
+        return "clean code + performance";
+    }
+}</code></pre>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <div class="container" id="services">
+            <div class="section-heading">
+                <div class="sub">WHAT I DO</div>
+                <h2>Full-Stack <span style="color:#38bdf8;">Expertise</span></h2>
+            </div>
+            <div class="services-grid">
+                <div class="service-card"><div class="service-icon"><i class="fab fa-laravel"></i></div><h3>Laravel Development</h3><p>Custom Laravel apps, REST APIs, Eloquent optimization, scalable architecture.</p></div>
+                <div class="service-card"><div class="service-icon"><i class="fas fa-database"></i></div><h3>Database Design</h3><p>Complex relational schemas, query optimization, migrations, data integrity.</p></div>
+                <div class="service-card"><div class="service-icon"><i class="fab fa-vuejs"></i></div><h3>Modern Frontend</h3><p>Vue.js / React + Inertia or Livewire – reactive UIs that integrate seamlessly.</p></div>
+                <div class="service-card"><div class="service-icon"><i class="fas fa-cloud-upload-alt"></i></div><h3>DevOps & Deployment</h3><p>Forge, Envoyer, Docker, CI/CD pipelines, and server management.</p></div>
+            </div>
+        </div>
+
+        <!-- PROJECTS SECTION WITH FIXED RESPONSIVE IMAGES -->
+        <section id="projects" class="projects-horizontal-section">
+            <div class="container">
+                <div class="section-heading">
+                    <div class="sub">RECENT WORK</div>
+                    <h2>Real-world <span style="color:#38bdf8;">Solutions</span></h2>
+                </div>
+            </div>
+            <div class="projects-scroll-container" id="horizontalScroll">
+                <div class="project-horizontal-card">
+                    <div class="project-img"><img src="/pics/cpcc.png" alt="Eurl CP&CC" loading="lazy"></div>
+                    <div class="project-content">
+                        <h3>Eurl CP&CC</h3>
+                        <p>Corrosion control and cathodic protection Website.</p>
+                        <div class="project-tech"><span>Laravel</span><span>Livewire</span><span>Filament</span></div>
+                    </div>
+                </div>
+
+                <div class="project-horizontal-card">
+                    <div class="project-img"><img src="/pics/basmati.png" alt="SaaS Basmati" loading="lazy"></div>
+                    <div class="project-content">
+                        <h3>SaaS Basmati</h3>
+                        <p>BASMATI est la solution complète pour les cabinets dentaires en Algérie. Patients, Rendez-vous, Paiements - tout en un seul endroit.</p>
+                        <div class="project-tech"><span>Laravel</span><span>Livewire</span></div>
+                    </div>
+                </div>
+
+                <div class="project-horizontal-card">
+                    <div class="project-img"><img src="/pics/ngs.png" alt="SARL NGS-TECH" loading="lazy"></div>
+                    <div class="project-content">
+                        <h3>SARL NGS-TECH</h3>
+                        <p>Sarl NGS-TECH provides innovative software solutions for various industries.</p>
+                        <div class="project-tech"><span>Laravel</span><span>Livewire</span></div>
+                    </div>
+                </div>
+
+                <div class="project-horizontal-card">
+                    <div class="project-img"><img src="/pics/swiftFix.png" alt="SwiftFix" loading="lazy"></div>
+                    <div class="project-content">
+                        <h3>SwiftFix</h3>
+                        <p>SwiftFix is a comprehensive solution for managing Repair Stores.</p>
+                        <div class="project-tech"><span>Laravel</span><span>Livewire</span><span>Redis</span></div>
+                    </div>
+                </div>
+
+                <div class="project-horizontal-card">
+                    <div class="project-img"><img src="/pics/Ecom.png" alt="Ecommerce Platform" loading="lazy"></div>
+                    <div class="project-content">
+                        <h3>Ecommerce Platform</h3>
+                        <p>E-commerce platform with cart functionality and COD support.</p>
+                        <div class="project-tech"><span>Laravel</span><span>Vue.js</span><span>ChargilyPay</span></div>
+                    </div>
+                </div>
+
+                <div class="project-horizontal-card">
+                    <div class="project-img"><img src="/pics/orabi.png" alt="SARL EL Orabi Systems" loading="lazy"></div>
+                    <div class="project-content">
+                        <h3>SARL EL Orabi Systems</h3>
+                        <p>Company Website for IT Solutions.</p>
+                        <div class="project-tech"><span>Laravel</span><span>WebSocket</span></div>
+                    </div>
+                </div>
+
+                <div class="project-horizontal-card">
+                    <div class="project-img"><img src="/pics/mf.png" alt="MF International" loading="lazy"></div>
+                    <div class="project-content">
+                        <h3>MF International</h3>
+                        <p>MF International Event planning and management platform.</p>
+                        <div class="project-tech"><span>Laravel Octane</span><span>PostgreSQL</span></div>
+                    </div>
+                </div>
+
+                <div class="project-horizontal-card">
+                    <div class="project-img"><img src="/pics/tutor.png" alt="TutorEduc" loading="lazy"></div>
+                    <div class="project-content">
+                        <h3>TutorEduc</h3>
+                        <p>Online tutoring platform with video conferencing and progress tracking.</p>
+                        <div class="project-tech"><span>Laravel</span><span>Vue</span><span>Twilio</span></div>
+                    </div>
+                </div>
+
+                <div class="project-horizontal-card">
+                    <div class="project-img"><img src="/pics/cnr.png" alt="CNR Solutions" loading="lazy"></div>
+                    <div class="project-content">
+                        <h3>CNR Solutions</h3>
+                        <p>Custom Analytics Dashboard for CNR Bejaia</p>
+                        <div class="project-tech"><span>Laravel</span><span>MYSQL</span></div>
+                    </div>
+                </div>
+            </div>
+            <div class="scroll-hint"><i class="fas fa-arrow-right"></i> Drag or scroll horizontally → <i class="fas fa-arrow-right"></i></div>
+        </section>
+
+        <div class="container" id="about">
+            <div class="about-wrapper">
+                <div class="about-text">
+                    <h2 style="font-size: clamp(1.4rem, 3vw, 1.9rem); margin-bottom: 20px;">I'm a <span style="color:#38bdf8;">Laravel Artisan</span> who loves clean code</h2>
+                    <p style="margin-bottom: 20px; color: #cbd5e1; line-height: 1.7;">Over 8 years of building robust web applications. I specialize in scalable backends, secure authentication, and optimized databases.</p>
+                    <p style="color: #94a3b8;">Certified Laravel developer, open-source contributor.</p>
+                </div>
+                <div class="skillset">
+                    <h3 style="margin-bottom: 20px; font-size: 1.2rem;">Core Competencies</h3>
+                    <div>
+                        <span class="skill-badge">PHP / Laravel</span>
+                        <span class="skill-badge">MySQL / PgSQL</span>
+                        <span class="skill-badge">RESTful APIs</span>
+                        <span class="skill-badge">GraphQL</span>
+                        <span class="skill-badge">Vue.js / React</span>
+                        <span class="skill-badge">Livewire</span>
+                        <span class="skill-badge">Docker</span>
+                        <span class="skill-badge">Redis / Queues</span>
+                    </div>
                 </div>
             </div>
         </div>
 
-        <!-- Floating Elements -->
-        <div class="absolute bottom-10 left-4 md:left-10 font-mono text-[10px] md:text-xs text-gray-600 hidden lg:block">
-            <div class="flex items-center gap-2 mb-2">
-                <span class="status-dot status-online"></span>
-                SYSTEM_OPERATIONAL
+        <div class="container" id="contact">
+            <div class="contact-section">
+                <i class="fas fa-envelope-open-text" style="font-size: 3rem; color: #38bdf8;"></i>
+                <h2 style="margin-top: 20px;">Let's Build Something <span style="color:#38bdf8;">Amazing</span></h2>
+                <p style="margin: 16px 0 24px; color: #94a3b8;">Have a project? Let's discuss how I can help bring your vision to life.</p>
+                <div>
+                    <a href="mailto:sami.dose@gmail.com" class="contact-item"><i class="fas fa-envelope"></i> Email</a>
+                    <a href="https://github.com/samyzaidi" class="contact-item" target="_blank" rel="noopener"><i class="fab fa-github"></i> GitHub</a>
+                    <a href="https://linkedin.com/in/samyzaidi0" class="contact-item" target="_blank" rel="noopener"><i class="fab fa-linkedin"></i> LinkedIn</a>
+                </div>
+                <div style="margin-top: 40px;">
+                    <a href="http://wa.me/+213661430103" class="btn btn-primary" style="background:#38bdf8; color:#0f172a;"><i class="fab fa-whatsapp"></i> Schedule a Call</a>
+                </div>
             </div>
-            <div>UPTIME: 99.9%</div>
         </div>
-    </section>
 
-    <!-- Marquee -->
-    <div class="py-6 border-y border-white/10 bg-black overflow-hidden">
-        <div class="marquee-container">
-            <div class="marquee-content font-mono text-lg md:text-2xl font-bold tracking-widest">
-                <span class="mx-4 md:mx-8 text-gray-600">LARAVEL</span>
-                <span class="mx-4 md:mx-8 text-[#ccff00]">FILAMENT</span>
-                <span class="mx-4 md:mx-8 text-gray-600">LIVEWIRE</span>
-                <span class="mx-4 md:mx-8 text-[#ccff00]">TAILWIND</span>
-                <span class="mx-4 md:mx-8 text-gray-600">ALPINE.JS</span>
-                <span class="mx-4 md:mx-8 text-[#ccff00]">MYSQL</span>
-                <span class="mx-4 md:mx-8 text-gray-600">REDIS</span>
-                <span class="mx-4 md:mx-8 text-[#ccff00]">DOCKER</span>
-                <span class="mx-4 md:mx-8 text-gray-600">LARAVEL</span>
-                <span class="mx-4 md:mx-8 text-[#ccff00]">FILAMENT</span>
-                <span class="mx-4 md:mx-8 text-gray-600">LIVEWIRE</span>
-                <span class="mx-4 md:mx-8 text-[#ccff00]">TAILWIND</span>
-                <span class="mx-4 md:mx-8 text-gray-600">ALPINE.JS</span>
-                <span class="mx-4 md:mx-8 text-[#ccff00]">MYSQL</span>
-                <span class="mx-4 md:mx-8 text-gray-600">REDIS</span>
-                <span class="mx-4 md:mx-8 text-[#ccff00]">DOCKER</span>
-            </div>
-        </div>
+        <footer>
+            <p>© 2026 Samy Zaidi | Built with <i class="fas fa-heart" style="color:#38bdf8;"></i></p>
+        </footer>
     </div>
 
-    <!-- Work Section - Horizontal Scroll with Infinite Navigation -->
-    <section id="work" class="py-16 md:py-24 relative diagonal-lines">
-        <div class="max-w-7xl mx-auto px-4 md:px-6">
-            <div class="mb-8 md:mb-12">
-                <span class="font-mono text-[10px] md:text-xs text-[#ccff00] tracking-widest block mb-2">// SELECT * FROM projects WHERE impact = 'high'</span>
-                <h2 class="text-3xl md:text-5xl font-bold mt-2 md:mt-4 glitch" data-text="DEPLOYED_SYSTEMS">DEPLOYED_SYSTEMS</h2>
-            </div>
+    <div class="scroll-progress" id="scrollPercent" role="button" aria-label="Scroll to top">0%</div>
 
-            <!-- Projects Wrapper with Navigation -->
-            <div class="projects-wrapper relative px-4 md:px-12">
-                <button class="nav-arrow prev" id="prevBtn">
-                    <i data-lucide="chevron-left" class="w-6 h-6"></i>
-                </button>
-                <button class="nav-arrow next" id="nextBtn">
-                    <i data-lucide="chevron-right" class="w-6 h-6"></i>
-                </button>
+    <script type="module">
+        import * as THREE from 'three';
+        import { CSS2DRenderer, CSS2DObject } from 'three/addons/renderers/CSS2DRenderer.js';
 
-                <div class="projects-scroll" id="projectsScroll">
-                    <!-- Project 1 -->
-                    <div class="project-card" data-project-id="0">
-                        <div class="project-image">
-                            <div class="project-image-placeholder">
-                                <i data-lucide="shopping-cart" class="w-12 h-12 mb-2"></i>
-                                <span class="font-mono text-xs">
-                                    <img src="/pics/Ecom.png" alt="">
-                                </span>
-                            </div>
-                        </div>
-                        <div class="project-content">
-                            <div class="project-number">01</div>
-                            <div class="flex items-center gap-2 mb-2">
-                                <span class="px-2 py-0.5 bg-[#ccff00] text-black text-[10px] font-bold font-mono">LIVE</span>
-                                <span class="text-gray-500 font-mono text-[10px]">2026.04</span>
-                            </div>
-                            <h3 class="text-lg font-bold mb-2">Ecommerce Platform</h3>
-                            <p class="text-gray-400 text-xs mb-3 line-clamp-2">E-commerce platform with WhatsApp-integrated COD system. Eliminates cart abandonment.</p>
-                            
-                            <div class="space-y-1 font-mono text-[10px] mb-3">
-                                <div class="flex justify-between">
-                                    <span class="text-gray-600">CONVERSION</span>
-                                    <span class="text-[#ccff00]">+40%</span>
-                                </div>
-                                <div class="flex justify-between">
-                                    <span class="text-gray-600">CHECKOUT_TIME</span>
-                                    <span class="text-[#ccff00]">-60%</span>
-                                </div>
-                            </div>
+        const canvas = document.getElementById('canvas-3d');
+        const scene = new THREE.Scene();
+        scene.background = null;
 
-                            <div class="flex gap-2">
-                                <button class="flex-1 py-2 border border-gray-700 hover:border-[#ccff00] hover:text-[#ccff00] transition-all font-mono text-[10px] touch-btn">
-                                    <a href="https://lilies-collections.com" target="_blank" rel="noopener noreferrer">VIEW_CASE</a>
-                                </button>
-                                
-                            </div>
-                        </div>
-                    </div>
+        const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
+        camera.position.set(0, 2, 18);
 
-                    <!-- Project 2 -->
-                    <div class="project-card" data-project-id="1">
-                        <div class="project-image">
-                            <div class="project-image-placeholder">
-                                <i data-lucide="users" class="w-12 h-12 mb-2"></i>
-                                <span class="font-mono text-xs">
-                                    <img src="/pics/ngs.png" alt="">
-                                </span>
-                            </div>
-                        </div>
-                        <div class="project-content">
-                            <div class="project-number">02</div>
-                            <div class="flex items-center gap-2 mb-2">
-                                <span class="px-2 py-0.5 bg-gray-800 text-gray-400 text-[10px] font-bold font-mono">COMPLETED</span>
-                                <span class="text-gray-500 font-mono text-[10px]">2025.11</span>
-                            </div>
-                            <h3 class="text-lg font-bold mb-2">NGS TECH</h3>
-                            <p class="text-gray-400 text-xs mb-3 line-clamp-2">Client management with automated lead scoring and invoice generation.</p>
-                            
-                            <div class="space-y-1 font-mono text-[10px] mb-3">
-                                <div class="flex justify-between">
-                                    <span class="text-gray-600">TIME_SAVED</span>
-                                    <span class="text-[#ccff00]">15hrs/wk</span>
-                                </div>
-                                <div class="flex justify-between">
-                                    <span class="text-gray-600">PAPERLESS</span>
-                                    <span class="text-[#ccff00]">100%</span>
-                                </div>
-                            </div>
+        const webglRenderer = new THREE.WebGLRenderer({ canvas, alpha: true });
+        webglRenderer.setSize(window.innerWidth, window.innerHeight);
+        webglRenderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 
-                            <div class="flex gap-2">
-                                <button class="flex-1 py-2 border border-gray-700 hover:border-[#ccff00] hover:text-[#ccff00] transition-all font-mono text-[10px] touch-btn">
-                                   <a href="https://www.ngstech.dz" target="_blank" rel="noopener noreferrer">VIEW_CASE</a>
-                                </button>
-                                
-                            </div>
-                        </div>
-                    </div>
+        const labelRenderer = new CSS2DRenderer();
+        labelRenderer.setSize(window.innerWidth, window.innerHeight);
+        labelRenderer.domElement.style.position = 'absolute';
+        labelRenderer.domElement.style.top = '0px';
+        labelRenderer.domElement.style.left = '0px';
+        labelRenderer.domElement.style.pointerEvents = 'none';
+        labelRenderer.domElement.style.zIndex = '5';
+        document.getElementById('canvas-wrapper').appendChild(labelRenderer.domElement);
 
-                    <!-- Project 3 -->
-                    <div class="project-card" data-project-id="2">
-                        <div class="project-image">
-                            <div class="project-image-placeholder">
-                                <i data-lucide="calendar" class="w-12 h-12 mb-2"></i>
-                                <span class="font-mono text-xs">
-                                    <img src="/pics/orabi.png" alt="">
-                                </span>
-                            </div>
-                        </div>
-                        <div class="project-content">
-                            <div class="project-number">03</div>
-                            <div class="flex items-center gap-2 mb-2">
-                                <span class="px-2 py-0.5 bg-[#ccff00] text-black text-[10px] font-bold font-mono">LIVE</span>
-                                <span class="text-gray-500 font-mono text-[10px]">2023.08</span>
-                            </div>
-                            <h3 class="text-lg font-bold mb-2">El Orabi system</h3>
-                            <p class="text-gray-400 text-xs mb-3 line-clamp-2">Real-time scheduling with conflict resolution and Stripe deposit collection.</p>
-                            
-                            <div class="space-y-1 font-mono text-[10px] mb-3">
-                                <div class="flex justify-between">
-                                    <span class="text-gray-600">DOUBLE_BOOKINGS</span>
-                                    <span class="text-[#ccff00]">0%</span>
-                                </div>
-                                <div class="flex justify-between">
-                                    <span class="text-gray-600">REVENUE</span>
-                                    <span class="text-[#ccff00]">+25%</span>
-                                </div>
-                            </div>
+        const ambientLight = new THREE.AmbientLight(0x222222);
+        scene.add(ambientLight);
+        const fillLight = new THREE.PointLight(0x4466cc, 0.4);
+        fillLight.position.set(0, 3, 2);
+        scene.add(fillLight);
 
-                            <div class="flex gap-2">
-                                <button class="flex-1 py-2 border border-gray-700 hover:border-[#ccff00] hover:text-[#ccff00] transition-all font-mono text-[10px] touch-btn">
-                                     <a href="https://elorabi-system.com" target="_blank" rel="noopener noreferrer">VIEW_CASE</a>
-                                </button>
-                                
-                            </div>
-                        </div>
-                    </div>
+        // Central Laravel logo
+        const laravelDiv = document.createElement('div');
+        laravelDiv.innerHTML = '<i class="fab fa-laravel" style="font-size: clamp(48px, 8vw, 88px); color: #ff2d20; filter: drop-shadow(0 0 28px #ff2d20);"></i>';
+        const laravelSun = new CSS2DObject(laravelDiv);
+        laravelSun.position.set(0, 0, 0);
+        scene.add(laravelSun);
 
-                    <!-- Project 4 -->
-                    <div class="project-card" data-project-id="3">
-                        <div class="project-image">
-                            <div class="project-image-placeholder">
-                                <i data-lucide="package" class="w-12 h-12 mb-2"></i>
-                                <span class="font-mono text-xs">
-                                    <img src="/pics/mf.png" alt="">
-                                </span>
-                            </div>
-                        </div>
-                        <div class="project-content">
-                            <div class="project-number">04</div>
-                            <div class="flex items-center gap-2 mb-2">
-                                <span class="px-2 py-0.5 bg-[#ccff00] text-black text-[10px] font-bold font-mono">Completed</span>
-                                <span class="text-gray-500 font-mono text-[10px]">2023.02</span>
-                            </div>
-                            <h3 class="text-lg font-bold mb-2">MF International Events</h3>
-                            <p class="text-gray-400 text-xs mb-3 line-clamp-2">Agence événementielle internationale</p>
-                            
-                            <div class="space-y-1 font-mono text-[10px] mb-3">
-                                <div class="flex justify-between">
-                                    <span class="text-gray-600">DOUBLES</span>
-                                    <span class="text-[#ccff00]">-90%</span>
-                                </div>
-                                <div class="flex justify-between">
-                                    <span class="text-gray-600">REVENUE</span>
-                                    <span class="text-[#ccff00]">+35%</span>
-                                </div>
-                            </div>
+        // Planets data
+        const planetsData = [
+            { icon: '<i class="fas fa-database" style="font-size: clamp(24px, 4vw, 40px); color: #00758f;"></i>', radius: 3.0, speed: 0.9, angle: 0 },
+            { icon: '<i class="fab fa-php" style="font-size: clamp(26px, 4vw, 42px); color: #777bb4;"></i>', radius: 3.7, speed: 0.75, angle: 1.3 },
+            { icon: '<i class="fab fa-vuejs" style="font-size: clamp(26px, 4vw, 42px); color: #42b883;"></i>', radius: 4.4, speed: 0.64, angle: 2.7 },
+            { icon: '<i class="fab fa-html5" style="font-size: clamp(24px, 4vw, 40px); color: #e34c26;"></i>', radius: 5.1, speed: 0.55, angle: 3.9 },
+            { icon: '<i class="fab fa-css3-alt" style="font-size: clamp(24px, 4vw, 40px); color: #264de4;"></i>', radius: 5.8, speed: 0.49, angle: 4.4 },
+            { icon: '<i class="fab fa-tailwind" style="font-size: clamp(24px, 4vw, 40px); color: #38bdf8;"></i>', radius: 6.5, speed: 0.44, angle: 5.2 },
+            { icon: '<i class="fab fa-react" style="font-size: clamp(26px, 4vw, 42px); color: #61dafb;"></i>', radius: 7.2, speed: 0.4, angle: 1.0 },
+            { icon: '<i class="fab fa-node-js" style="font-size: clamp(28px, 4vw, 44px); color: #68a063;"></i>', radius: 7.9, speed: 0.36, angle: 3.2 },
+            { icon: '<i class="fab fa-docker" style="font-size: clamp(24px, 4vw, 40px); color: #2496ed;"></i>', radius: 8.6, speed: 0.33, angle: 5.7 }
+        ];
 
-                            <div class="flex gap-2">
-                                <button class="flex-1 py-2 border border-gray-700 hover:border-[#ccff00] hover:text-[#ccff00] transition-all font-mono text-[10px] touch-btn">
-                                    <a href="https://mf-international-events.com" target="_blank" rel="noopener noreferrer"></a>VIEW_CASE</a>
-                                </button>
-                                
-                            </div>
-                        </div>
-                    </div>
+        const planets = [];
+        planetsData.forEach((data) => {
+            const div = document.createElement('div');
+            div.innerHTML = data.icon;
+            const planet = new CSS2DObject(div);
+            planet.userData = { radius: data.radius, speed: data.speed, angle: data.angle };
+            scene.add(planet);
+            planets.push(planet);
+        });
 
+        // Stars
+        const starCount = 1500;
+        const starsGeo = new THREE.BufferGeometry();
+        const starPositions = new Float32Array(starCount * 3);
+        for (let i = 0; i < starCount; i++) {
+            starPositions[i*3] = (Math.random() - 0.5) * 200;
+            starPositions[i*3+1] = (Math.random() - 0.5) * 100;
+            starPositions[i*3+2] = (Math.random() - 0.5) * 80 - 40;
+        }
+        starsGeo.setAttribute('position', new THREE.BufferAttribute(starPositions, 3));
+        const stars = new THREE.Points(starsGeo, new THREE.PointsMaterial({ color: 0xffffff, size: 0.06, transparent: true, opacity: 0.4 }));
+        scene.add(stars);
 
-                    <!-- Project 5 -->
-                    <div class="project-card" data-project-id="4">
-                        <div class="project-image">
-                            <div class="project-image-placeholder">
-                                <i data-lucide="package" class="w-12 h-12 mb-2"></i>
-                                <span class="font-mono text-xs">
-                                    <img src="/pics/tutor.png" alt="Tutor Educ">
-                                </span>
-                            </div>
-                        </div>
-                        <div class="project-content">
-                            <div class="project-number">05</div>
-                            <div class="flex items-center gap-2 mb-2">
-                                <span class="px-2 py-0.5 bg-[#ccff00] text-black text-[10px] font-bold font-mono">Completed</span>
-                                <span class="text-gray-500 font-mono text-[10px]">2023.08</span>
-                            </div>
-                            <h3 class="text-lg font-bold mb-2">Tutor Educ</h3>
-                            <p class="text-gray-400 text-xs mb-3 line-clamp-2">Platform for educational tutoring services</p>
-                            
-                            <div class="space-y-1 font-mono text-[10px] mb-3">
-                                <div class="flex justify-between">
-                                    <span class="text-gray-600">DOUBLES</span>
-                                    <span class="text-[#ccff00]">-90%</span>
-                                </div>
-                                <div class="flex justify-between">
-                                    <span class="text-gray-600">REVENUE</span>
-                                    <span class="text-[#ccff00]">+35%</span>
-                                </div>
-                            </div>
+        let scrollPercent = 0;
+        let orbitSpeedMultiplier = 1;
+        let scrollYOffset = 0;
 
-                            <div class="flex gap-2">
-                                <button class="flex-1 py-2 border border-gray-700 hover:border-[#ccff00] hover:text-[#ccff00] transition-all font-mono text-[10px] touch-btn">
-                                    <a href="https://tutor-educ.com" target="_blank" rel="noopener noreferrer">VIEW_CASE</a>
-                                </button>
-                                
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Project 6-->
-                    <div class="project-card" data-project-id="5">
-                        <div class="project-image">
-                            <div class="project-image-placeholder">
-                                <i data-lucide="package" class="w-12 h-12 mb-2"></i>
-                                <span class="font-mono text-xs">
-                                    <img src="/pics/cnr.png" alt="Tutor Educ">
-                                </span>
-                            </div>
-                        </div>
-                        <div class="project-content">
-                            <div class="project-number">06</div>
-                            <div class="flex items-center gap-2 mb-2">
-                                <span class="px-2 py-0.5 bg-[#ccff00] text-black text-[10px] font-bold font-mono">Completed</span>
-                                <span class="text-gray-500 font-mono text-[10px]">2022.11</span>
-                            </div>
-                            <h3 class="text-lg font-bold mb-2">CNR Dashboard</h3>
-                            <p class="text-gray-400 text-xs mb-3 line-clamp-2">Dashboard for CNR data visualization and suivi de Trop Percu </p>
-                            
-                            <div class="space-y-1 font-mono text-[10px] mb-3">
-                                <div class="flex justify-between">
-                                    <span class="text-gray-600">TP Fault </span>
-                                    <span class="text-[#ccff00]">-60%</span>
-                                </div>
-                                <div class="flex justify-between">
-                                    <span class="text-gray-600">Data visualization </span>
-                                    <span class="text-[#ccff00]">+55%</span>
-                                </div>
-                            </div>
-
-                            <div class="flex gap-2">
-                                <button class="flex-1 py-2 border border-gray-700 hover:border-[#ccff00] hover:text-[#ccff00] transition-all font-mono text-[10px] touch-btn">
-                                    <a href="#" target="_blank" rel="noopener noreferrer">VIEW_CASE</a>
-                                </button>
-                                
-                            </div>
-                        </div>
-                    </div>
-
-
-                    
-                </div>
-
-                <!-- Navigation Dots -->
-                <div class="project-nav-dots" id="navDots">
-                    <div class="nav-dot active" data-dot-index="0"></div>
-                    <div class="nav-dot" data-dot-index="1"></div>
-                    <div class="nav-dot" data-dot-index="2"></div>
-                    <div class="nav-dot" data-dot-index="3"></div>
-                </div>
-            </div>
-
-            <div class="swipe-hint">
-                <i data-lucide="arrow-left" class="w-4 h-4"></i>
-                <span>SWIPE TO EXPLORE</span>
-                <i data-lucide="arrow-right" class="w-4 h-4"></i>
-            </div>
-        </div>
-    </section>
-
-    <!-- Stack Section (REWRITTEN - ENGINEERING POSITIONING) -->
-    <section id="stack" class="py-24 bg-[#0f0f0f]">
-        <div class="max-w-7xl mx-auto px-6 grid md:grid-cols-2 gap-16 items-center">
-            <div>
-                <span class="font-mono text-xs text-[#ccff00]">// ENGINEERING_CAPABILITIES</span>
-                <h2 class="text-4xl md:text-5xl font-bold mt-4 mb-6">SYSTEM_ARCHITECTURE STACK</h2>
-                <p class="text-gray-400 mb-8">We don't use tools randomly. Every layer is selected to build scalable, production-grade systems that support real business operations.</p>
-                <div class="space-y-3 font-mono text-sm">
-                    <div class="p-4 border border-gray-800 hover:border-[#ccff00] transition-colors">Laravel 11 — Business Backend Architecture</div>
-                    <div class="p-4 border border-gray-800 hover:border-[#ccff00] transition-colors">FilamentPHP — Admin & Internal Systems</div>
-                    <div class="p-4 border border-gray-800 hover:border-[#ccff00] transition-colors">Livewire 3 — Reactive Interfaces</div>
-                    <div class="p-4 border border-gray-800 hover:border-[#ccff00] transition-colors">Tailwind CSS — UI Systems</div>
-                    <div class="p-4 border border-gray-800 hover:border-[#ccff00] transition-colors">MySQL / Redis — Data & Performance Layer</div>
-                    <div class="p-4 border border-gray-800 hover:border-[#ccff00] transition-colors">APIs / Webhooks — System Integration Layer</div>
-                </div>
-            </div>
-
-            <!-- STATS -->
-            <div class="border border-gray-800 p-10 text-center">
-                <div class="mb-8">
-                    <div class="text-5xl font-bold text-[#ccff00]">98%</div>
-                    <div class="text-xs text-gray-500 mt-2">CLIENT RETENTION</div>
-                </div>
-                <div class="mb-8">
-                    <div class="text-5xl font-bold">50+</div>
-                    <div class="text-xs text-gray-500 mt-2">SYSTEMS DEPLOYED</div>
-                </div>
-                <div>
-                    <div class="text-5xl font-bold text-[#ccff00]">24–72h</div>
-                    <div class="text-xs text-gray-500 mt-2">MVP DELIVERY</div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Services Section (NEW HIGH-END POSITIONING) -->
-    <section id="services" class="py-24 bg-black border-t border-white/10">
-        <div class="max-w-7xl mx-auto px-6">
-            <span class="font-mono text-xs text-[#ccff00]">// BUSINESS_SYSTEMS_OFFERING</span>
-            <h2 class="text-4xl md:text-5xl font-bold mt-4 mb-12">WHAT WE BUILD</h2>
-            <div class="grid md:grid-cols-3 gap-6 font-mono">
-                <div class="border border-gray-800 p-6 hover:border-[#ccff00] transition-all">
-                    <div class="text-[#ccff00] text-xs mb-2">FOUNDATION</div>
-                    <h3 class="text-lg font-bold mb-3">Landing Systems</h3>
-                    <p class="text-gray-500 text-sm mb-4">High-conversion landing pages engineered for business goals, not aesthetics.</p>
-                    <div class="text-[#ccff00] font-bold">40,000 – 90,000 DA</div>
-                                    </div>
-                                    <div class="border border-gray-800 p-6 hover:border-[#ccff00] transition-all">
-                                        <div class="text-[#ccff00] text-xs mb-2">BUSINESS CORE</div>
-                                        <h3 class="text-lg font-bold mb-3">Automation & CRM</h3>
-                                        <p class="text-gray-500 text-sm mb-4">Internal dashboards, workflows, invoicing, and operational automation systems.</p>
-                    <div class="text-[#ccff00] font-bold">120,000 – 350,000 DA</div>
-                                    </div>
-                                    <div class="border border-gray-800 p-6 hover:border-[#ccff00] transition-all">
-                                        <div class="text-[#ccff00] text-xs mb-2">FULL SCALE</div>
-                                        <h3 class="text-lg font-bold mb-3">E-commerce Platforms</h3>
-                                        <p class="text-gray-500 text-sm mb-4">Complete business platforms with payments, admin panels, analytics, and scaling systems.</p>
-                    <div class="text-[#ccff00] font-bold">250,000 – 800,000 DA</div>
-                </div>
-            </div>
-            <div class="mt-16 border-l-2 border-[#ccff00] pl-6 text-gray-400 font-mono text-sm">
-                We don't build websites. We build systems that replace manual work, automate revenue, and scale operations.
-            </div>
-        </div>
-    </section>
-
-    <!-- Philosophy / Logs Section -->
-    <section id="logs" class="py-16 md:py-24 relative">
-        <div class="max-w-4xl mx-auto px-4 md:px-6">
-            <div class="text-center mb-8 md:mb-12">
-                <span class="font-mono text-[10px] md:text-xs text-[#ccff00] tracking-widest block mb-2">// SYSTEM_LOGS</span>
-                <h2 class="text-3xl md:text-5xl font-bold mt-2 glitch" data-text="OPERATING_PRINCIPLES">OPERATING_PRINCIPLES</h2>
-            </div>
-
-            <div class="space-y-3 md:space-y-4 font-mono text-xs md:text-sm">
-                <div class="border-l-2 border-[#ccff00] pl-4 md:pl-6 py-2 reveal">
-                    <div class="text-gray-500 mb-1 text-[10px] md:text-xs">[2026-04-19T10:23:01] INFO:</div>
-                    <div class="text-white leading-relaxed text-sm md:text-base">Business logic over buzzwords. Every feature must justify its existence in revenue or time saved.</div>
-                </div>
-                <div class="border-l-2 border-gray-700 pl-4 md:pl-6 py-2 reveal">
-                    <div class="text-gray-500 mb-1 text-[10px] md:text-xs">[2026-04-19T10:23:45] WARN:</div>
-                    <div class="text-white leading-relaxed text-sm md:text-base">No "pixel-perfect" nonsense. Functional, fast, and profitable beats pretty and useless.</div>
-                </div>
-                <div class="border-l-2 border-gray-700 pl-4 md:pl-6 py-2 reveal">
-                    <div class="text-gray-500 mb-1 text-[10px] md:text-xs">[2026-04-19T10:24:12] DEBUG:</div>
-                    <div class="text-white leading-relaxed text-sm md:text-base">Code is liability. Less code = less bugs = less maintenance = more profit for client.</div>
-                </div>
-                <div class="border-l-2 border-[#ff3366] pl-4 md:pl-6 py-2 reveal">
-                    <div class="text-gray-500 mb-1 text-[10px] md:text-xs">[2026-04-19T10:25:00] ERROR:</div>
-                    <div class="text-white leading-relaxed text-sm md:text-base">Template websites detected in sector. Deploying custom solutions immediately.</div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Contact Section -->
-    <section id="contact" class="py-16 md:py-24 bg-[#0a0a0a] border-t border-white/10">
-        <div class="max-w-3xl mx-auto px-4 md:px-6">
-            <div class="text-center mb-8 md:mb-12">
-                <span class="font-mono text-[10px] md:text-xs text-[#ccff00] tracking-widest block mb-2">// ESTABLISH_CONNECTION</span>
-                <h2 class="text-3xl md:text-5xl font-bold mt-2 mb-4">INITIATE_PROJECT</h2>
-                <p class="text-gray-500 font-mono text-xs md:text-sm">$ ./start_business_relationship.sh</p>
-            </div>
-
-            <form class="space-y-4 md:space-y-6" onsubmit="event.preventDefault(); handleCommand(this);">
-                <div class="grid md:grid-cols-2 gap-4 md:gap-6">
-                    <div class="relative">
-                        <label class="block font-mono text-[10px] md:text-xs text-gray-500 mb-1 md:mb-2">IDENTIFIER (NAME)</label>
-                        <input type="text" required class="w-full bg-transparent border border-gray-800 p-3 md:p-4 font-mono text-xs md:text-sm focus:border-[#ccff00] focus:outline-none transition-colors" placeholder="ENTER_NAME">
-                    </div>
-                    <div class="relative">
-                        <label class="block font-mono text-[10px] md:text-xs text-gray-500 mb-1 md:mb-2">CONTACT_POINT (EMAIL)</label>
-                        <input type="email" required class="w-full bg-transparent border border-gray-800 p-3 md:p-4 font-mono text-xs md:text-sm focus:border-[#ccff00] focus:outline-none transition-colors" placeholder="ENTER_EMAIL">
-                    </div>
-                </div>
-
-                <div>
-                    <label class="block font-mono text-[10px] md:text-xs text-gray-500 mb-1 md:mb-2">PROJECT_TYPE</label>
-                    <select class="w-full bg-transparent border border-gray-800 p-3 md:p-4 font-mono text-xs md:text-sm focus:border-[#ccff00] focus:outline-none transition-colors text-white">
-                        <option value="" class="bg-black">SELECT_SYSTEM_TYPE</option>
-                        <option value="ecommerce" class="bg-black">E-COMMERCE_ENGINE</option>
-                        <option value="crm" class="bg-black">CRM_NEURAL_NET</option>
-                        <option value="booking" class="bg-black">BOOKING_PROTOCOL</option>
-                        <option value="custom" class="bg-black">CUSTOM_ARCHITECTURE</option>
-                    </select>
-                </div>
-
-                <div>
-                    <label class="block font-mono text-[10px] md:text-xs text-gray-500 mb-1 md:mb-2">DATA_PAYLOAD (DETAILS)</label>
-                    <textarea rows="4" required class="w-full bg-transparent border border-gray-800 p-3 md:p-4 font-mono text-xs md:text-sm focus:border-[#ccff00] focus:outline-none transition-colors resize-none" placeholder="DESCRIBE_YOUR_SYSTEM_REQUIREMENTS..."></textarea>
-                </div>
-
-                <button type="submit" id="submitBtn" class="w-full bg-[#ccff00] text-black py-3 md:py-4 font-bold font-mono tracking-wider hover:bg-white transition-all relative group touch-btn">
-                    <span class="relative z-10 flex items-center justify-center gap-2 text-sm md:text-base">
-                        TRANSMIT_DATA
-                        <i data-lucide="send" class="w-4 h-4"></i>
-                    </span>
-                </button>
-            </form>
-
-            <div class="mt-8 md:mt-12 grid grid-cols-1 md:grid-cols-3 gap-3 md:gap-4 font-mono text-xs">
-                <a href="https://wa.me/+213661430103" target="_blank" class="flex items-center gap-3 p-3 md:p-4 border border-gray-800 hover:border-[#ccff00] transition-colors group touch-btn">
-                    <i data-lucide="message-circle" class="w-5 h-5 text-gray-600 group-hover:text-[#ccff00] flex-shrink-0"></i>
-                    <div class="min-w-0">
-                        <div class="text-gray-500 text-[10px] md:text-xs">WHATSAPP</div>
-                        <div class="text-white text-xs md:text-sm truncate">+213661430103</div>
-                    </div>
-                </a>
-                <a href="mailto:sami.dose@gmail.com" class="flex items-center gap-3 p-3 md:p-4 border border-gray-800 hover:border-[#ccff00] transition-colors group touch-btn">
-                    <i data-lucide="mail" class="w-5 h-5 text-gray-600 group-hover:text-[#ccff00] flex-shrink-0"></i>
-                    <div class="min-w-0">
-                        <div class="text-gray-500 text-[10px] md:text-xs">EMAIL</div>
-                        <div class="text-white text-xs md:text-sm truncate">sami.dose@gmail.com</div>
-                    </div>
-                </a>
-                <div class="flex items-center gap-3 p-3 md:p-4 border border-gray-800 touch-btn">
-                    <div class="w-5 h-5 rounded-full bg-[#ccff00] animate-pulse flex-shrink-0"></div>
-                    <div class="min-w-0">
-                        <div class="text-gray-500 text-[10px] md:text-xs">STATUS</div>
-                        <div class="text-[#ccff00] text-xs md:text-sm truncate">AVAILABLE_Q2</div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Footer -->
-    <footer class="py-6 md:py-8 border-t border-white/10 bg-black">
-        <div class="max-w-7xl mx-auto px-4 md:px-6 flex flex-col md:flex-row justify-between items-center gap-3 md:gap-4 font-mono text-[10px] md:text-xs text-gray-600">
-            <div class="text-center md:text-left">© 2026 Samy Zaidi // ALL_RIGHTS_RESERVED</div>
-            <div class="flex gap-4 md:gap-6">
-                <a href="#" class="hover:text-[#ccff00] transition-colors py-2">[GITHUB]</a>
-                <a href="#" class="hover:text-[#ccff00] transition-colors py-2">[LINKEDIN]</a>
-                <a href="#" class="hover:text-[#ccff00] transition-colors py-2">[TWITTER]</a>
-            </div>
-            <div class="hidden md:block">BUILD_VERSION: 2.4.1</div>
-        </div>
-    </footer>
-
-    <style>
-        .project-nav-dots {
-            display: flex;
-            justify-content: center;
-            gap: 0.5rem;
-            margin-top: 1rem;
+        function updateScrollEffects() {
+            const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
+            scrollPercent = maxScroll > 0 ? window.scrollY / maxScroll : 0;
+            orbitSpeedMultiplier = 1 + scrollPercent * 2.2;
+            scrollYOffset = -scrollPercent * 7.5;
+            const camAngle = scrollPercent * Math.PI * 0.8;
+            camera.position.x = Math.sin(camAngle) * 1.2;
+            camera.position.z = 16 - scrollPercent * 2.2;
+            camera.position.y = 1.8 + scrollPercent * 2.0;
+            camera.lookAt(0, scrollPercent * 1.2, 0);
+            stars.rotation.y = scrollPercent * 0.5;
         }
 
-        .nav-dot {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            background: #333;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
+        window.addEventListener('scroll', updateScrollEffects);
+        updateScrollEffects();
 
-        .nav-dot.active {
-            background: var(--neon-lime);
-            box-shadow: 0 0 10px var(--neon-lime);
+        let time = 0;
+        function animate() {
+            requestAnimationFrame(animate);
+            time += 0.014;
+            planets.forEach((planet, idx) => {
+                const data = planet.userData;
+                const currentAngle = time * data.speed * orbitSpeedMultiplier + data.angle;
+                const x = Math.cos(currentAngle) * data.radius;
+                const z = Math.sin(currentAngle) * data.radius;
+                const yOrbit = Math.sin(currentAngle * 1.8) * 0.55;
+                const y = yOrbit + scrollYOffset;
+                planet.position.set(x, y, z);
+            });
+            const pulse = 1 + Math.sin(time * 4.2) * 0.045;
+            laravelSun.element.style.transform = `scale(${pulse})`;
+            webglRenderer.render(scene, camera);
+            labelRenderer.render(scene, camera);
         }
+        animate();
 
-        .swipe-hint {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            color: #666;
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 0.75rem;
-            margin-top: 1rem;
-            justify-content: center;
-        }
-
-        @media (min-width: 768px) {
-            .swipe-hint {
-                display: none;
-            }
-        }
-
-        .line-clamp-2 {
-            display: -webkit-box;
-            -webkit-line-clamp: 2;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
-        }
-    </style>
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            webglRenderer.setSize(window.innerWidth, window.innerHeight);
+            labelRenderer.setSize(window.innerWidth, window.innerHeight);
+        });
+    </script>
 
     <script>
-        // Terminal Animation
-        function initTerminal() {
-            const lines = document.querySelectorAll('.terminal-line');
-            lines.forEach((line, index) => {
-                setTimeout(() => {
-                    line.classList.add('visible');
-                }, index * 200);
-            });
-        }
-
-        window.addEventListener('load', () => {
-            setTimeout(initTerminal, 300);
-        });
-
-        // Custom Cursor
-        const isTouchDevice = window.matchMedia('(pointer: coarse)').matches;
-        
-        if (!isTouchDevice) {
-            const cursorMain = document.querySelector('.cursor-main');
-            const cursorTrail = document.querySelector('.cursor-trail');
-            
-            document.addEventListener('mousemove', (e) => {
-                if (cursorMain) {
-                    cursorMain.style.left = e.clientX - 10 + 'px';
-                    cursorMain.style.top = e.clientY - 10 + 'px';
+        // Mobile menu toggle
+        const menuBtn = document.getElementById('mobileMenuBtn');
+        const navLinksDiv = document.getElementById('navLinks');
+        if (menuBtn) {
+            menuBtn.addEventListener('click', () => {
+                navLinksDiv.classList.toggle('show');
+                const icon = menuBtn.querySelector('i');
+                if (navLinksDiv.classList.contains('show')) {
+                    icon.classList.remove('fa-bars');
+                    icon.classList.add('fa-times');
+                } else {
+                    icon.classList.remove('fa-times');
+                    icon.classList.add('fa-bars');
                 }
-                
-                setTimeout(() => {
-                    if (cursorTrail) {
-                        cursorTrail.style.left = e.clientX - 20 + 'px';
-                        cursorTrail.style.top = e.clientY - 20 + 'px';
-                    }
-                }, 100);
-            });
-
-            document.querySelectorAll('a, button, .project-card').forEach(el => {
-                el.addEventListener('mouseenter', () => cursorMain?.classList.add('cursor-hover'));
-                el.addEventListener('mouseleave', () => cursorMain?.classList.remove('cursor-hover'));
             });
         }
 
-        // Mobile Menu
-        const hamburger = document.getElementById('hamburger');
-        const mobileMenu = document.getElementById('mobileMenu');
-        const mobileLinks = document.querySelectorAll('.mobile-link');
-
-        if (hamburger && mobileMenu) {
-            hamburger.addEventListener('click', () => {
-                hamburger.classList.toggle('active');
-                mobileMenu.classList.toggle('active');
-                document.body.style.overflow = mobileMenu.classList.contains('active') ? 'hidden' : '';
-            });
-        }
-
-        mobileLinks.forEach(link => {
+        document.querySelectorAll('.nav-links a').forEach(link => {
             link.addEventListener('click', () => {
-                hamburger?.classList.remove('active');
-                mobileMenu?.classList.remove('active');
-                document.body.style.overflow = '';
+                navLinksDiv.classList.remove('show');
+                const icon = menuBtn?.querySelector('i');
+                if (icon) {
+                    icon.classList.remove('fa-times');
+                    icon.classList.add('fa-bars');
+                }
             });
         });
 
-        // Scroll Reveal
-        const observerOptions = {
-            threshold: 0.1,
-            rootMargin: '0px 0px -50px'
-        };
+        // Navbar scroll effect
+        const navbar = document.getElementById('navbar');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 50) navbar.classList.add('scrolled');
+            else navbar.classList.remove('scrolled');
+        });
+
+        // Smooth scroll
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                const targetId = this.getAttribute('href');
+                if (targetId === '#') return;
+                const targetElem = document.querySelector(targetId);
+                if (targetElem) {
+                    e.preventDefault();
+                    const navHeight = navbar.offsetHeight;
+                    const targetPosition = targetElem.getBoundingClientRect().top + window.pageYOffset - navHeight;
+                    window.scrollTo({ top: targetPosition, behavior: 'smooth' });
+                }
+            });
+        });
+
+        // Counter animation
+        function animateCounter(el, target, suffix = '') {
+            let current = 0;
+            const step = Math.ceil(target / 60);
+            const update = () => {
+                current += step;
+                if (current >= target) { el.innerText = target + suffix; return; }
+                el.innerText = current + suffix;
+                requestAnimationFrame(update);
+            };
+            update();
+        }
+
+        const yearEl = document.getElementById('yearCounter');
+        const projEl = document.getElementById('projectCounter');
+        const clientEl = document.getElementById('clientCounter');
 
         const observer = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
-                    entry.target.classList.add('active');
+                    if (entry.target.id === 'yearCounter') animateCounter(yearEl, 8);
+                    if (entry.target.id === 'projectCounter') animateCounter(projEl, 55);
+                    if (entry.target.id === 'clientCounter') animateCounter(clientEl, 100, '%');
+                    observer.unobserve(entry.target);
                 }
             });
-        }, observerOptions);
+        }, { threshold: 0.5 });
 
-        document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+        if (yearEl) observer.observe(yearEl);
+        if (projEl) observer.observe(projEl);
+        if (clientEl) observer.observe(clientEl);
 
-        // Form Handler
-        function handleCommand(form) {
-            const btn = document.getElementById('submitBtn');
-            if (!btn) return;
-            
-            const originalText = btn.innerHTML;
-            
-            btn.innerHTML = '<span class="relative z-10 flex items-center justify-center gap-2 text-sm md:text-base">TRANSMITTING...</span>';
-            btn.disabled = true;
-            
-            setTimeout(() => {
-                btn.innerHTML = '<span class="relative z-10 flex items-center justify-center gap-2 text-sm md:text-base">DATA_RECEIVED ✓</span>';
-                btn.style.background = '#00ff00';
-                
-                setTimeout(() => {
-                    btn.innerHTML = originalText;
-                    btn.style.background = '';
-                    btn.disabled = false;
-                    form.reset();
-                }, 3000);
-            }, 2000);
-        }
-
-        // Initialize Lucide Icons
-        if (typeof lucide !== 'undefined') {
-            lucide.createIcons();
-        }
-
-        window.addEventListener('resize', () => {
-            if (window.innerWidth >= 768) {
-                hamburger?.classList.remove('active');
-                mobileMenu?.classList.remove('active');
-                document.body.style.overflow = '';
-            }
+        // Scroll progress
+        const scrollPercentDiv = document.getElementById('scrollPercent');
+        window.addEventListener('scroll', () => {
+            const height = document.documentElement.scrollHeight - window.innerHeight;
+            const scrolled = height > 0 ? (window.scrollY / height) * 100 : 0;
+            if (scrollPercentDiv) scrollPercentDiv.innerText = Math.floor(scrolled) + '%';
         });
 
-        // ============================================
-        // INFINITE SCROLL PROJECT SECTION
-        // ============================================
-        
-        const projectsScroll = document.getElementById('projectsScroll');
-        const prevBtn = document.getElementById('prevBtn');
-        const nextBtn = document.getElementById('nextBtn');
-        const navDots = document.querySelectorAll('.nav-dot');
-        let isScrolling = false;
-        let scrollTimeout;
-        let resizeTimeout;
-        
-        function getCardWidth() {
-            const card = projectsScroll?.querySelector('.project-card');
-            if (!card) return 350;
-            const style = window.getComputedStyle(card);
-            const marginRight = parseFloat(style.marginRight) || 0;
-            return card.offsetWidth + marginRight + 24;
+        if (scrollPercentDiv) {
+            scrollPercentDiv.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
         }
-        
-        function setupInfiniteScroll() {
-            if (!projectsScroll) return;
-            
-            const scrollContainer = projectsScroll;
-            const originalCards = Array.from(scrollContainer.querySelectorAll('.project-card:not(.clone-card)'));
-            
-            const existingClones = scrollContainer.querySelectorAll('.clone-card');
-            existingClones.forEach(clone => clone.remove());
-            
-            if (originalCards.length === 0) return;
-            
-            const clonesToAdd = [];
-            for (let i = 0; i < 2; i++) {
-                originalCards.forEach(card => {
-                    const clone = card.cloneNode(true);
-                    clone.classList.add('clone-card');
-                    clonesToAdd.push(clone);
-                });
-            }
-            
-            clonesToAdd.forEach(clone => {
-                scrollContainer.appendChild(clone);
-            });
-            
-            const clonesAtStart = [];
-            for (let i = 0; i < 2; i++) {
-                [...originalCards].reverse().forEach(card => {
-                    const clone = card.cloneNode(true);
-                    clone.classList.add('clone-card');
-                    clonesAtStart.push(clone);
-                });
-            }
-            clonesAtStart.reverse().forEach(clone => {
-                scrollContainer.insertBefore(clone, scrollContainer.firstChild);
-            });
-            
-            const cardWidth = getCardWidth();
-            const clonesBeforeCount = scrollContainer.querySelectorAll('.clone-card').length / 2;
-            const targetScroll = clonesBeforeCount * cardWidth;
-            scrollContainer.scrollLeft = targetScroll;
-        }
-        
-        function handleInfiniteScroll() {
-            if (!projectsScroll || isScrolling) return;
-            
-            const scrollContainer = projectsScroll;
-            const cardWidth = getCardWidth();
-            const scrollLeft = scrollContainer.scrollLeft;
-            
-            const originalCards = Array.from(scrollContainer.querySelectorAll('.project-card:not(.clone-card)'));
-            const originalCardsCount = originalCards.length;
-            const totalOriginalWidth = originalCardsCount * cardWidth;
-            
-            let clonesBeforeCount = 0;
-            let currentElement = scrollContainer.firstElementChild;
-            while (currentElement && currentElement.classList && currentElement.classList.contains('clone-card')) {
-                clonesBeforeCount++;
-                currentElement = currentElement.nextElementSibling;
-            }
-            
-            const originalStartPosition = clonesBeforeCount * cardWidth;
-            const originalEndPosition = originalStartPosition + totalOriginalWidth;
-            const threshold = cardWidth * 0.5;
-            
-            if (scrollLeft >= originalEndPosition - threshold) {
-                isScrolling = true;
-                scrollContainer.style.scrollBehavior = 'auto';
-                scrollContainer.scrollLeft = originalStartPosition + threshold;
-                setTimeout(() => {
-                    scrollContainer.style.scrollBehavior = 'smooth';
-                    isScrolling = false;
-                }, 50);
-            } else if (scrollLeft <= originalStartPosition - threshold && scrollLeft > 0) {
-                isScrolling = true;
-                scrollContainer.style.scrollBehavior = 'auto';
-                scrollContainer.scrollLeft = originalEndPosition - threshold;
-                setTimeout(() => {
-                    scrollContainer.style.scrollBehavior = 'smooth';
-                    isScrolling = false;
-                }, 50);
-            }
-            
-            const relativeScroll = scrollContainer.scrollLeft - originalStartPosition;
-            const currentIndex = Math.round(relativeScroll / cardWidth);
-            const normalizedIndex = ((currentIndex % originalCardsCount) + originalCardsCount) % originalCardsCount;
-            
-            if (normalizedIndex >= 0 && normalizedIndex < navDots.length) {
-                navDots.forEach((dot, idx) => {
-                    dot.classList.toggle('active', idx === normalizedIndex);
-                });
-            }
-        }
-        
-        function debouncedHandleInfiniteScroll() {
-            if (scrollTimeout) clearTimeout(scrollTimeout);
-            scrollTimeout = setTimeout(() => {
-                handleInfiniteScroll();
-            }, 10);
-        }
-        
-        function scrollProjects(direction) {
-            if (!projectsScroll || isScrolling) return;
-            
-            const cardWidth = getCardWidth();
-            const currentScroll = projectsScroll.scrollLeft;
-            const newScroll = currentScroll + (direction * cardWidth);
-            
-            projectsScroll.scrollTo({
-                left: newScroll,
-                behavior: 'smooth'
-            });
-        }
-        
-        function goToSlide(index) {
-            if (!projectsScroll || isScrolling) return;
-            
-            const cardWidth = getCardWidth();
-            
-            let clonesBeforeCount = 0;
-            let currentElement = projectsScroll.firstElementChild;
-            while (currentElement && currentElement.classList && currentElement.classList.contains('clone-card')) {
-                clonesBeforeCount++;
-                currentElement = currentElement.nextElementSibling;
-            }
-            
-            const originalStartPosition = clonesBeforeCount * cardWidth;
-            const targetScroll = originalStartPosition + (index * cardWidth);
-            
-            projectsScroll.scrollTo({
-                left: targetScroll,
-                behavior: 'smooth'
-            });
-        }
-        
-        if (prevBtn && nextBtn) {
-            prevBtn.addEventListener('click', () => scrollProjects(-1));
-            nextBtn.addEventListener('click', () => scrollProjects(1));
-        }
-        
-        navDots.forEach((dot, index) => {
-            dot.addEventListener('click', () => goToSlide(index));
-        });
-        
-        if (projectsScroll) {
-            setupInfiniteScroll();
-            projectsScroll.addEventListener('scroll', () => {
-                requestAnimationFrame(debouncedHandleInfiniteScroll);
-            });
-            
-            window.addEventListener('resize', () => {
-                if (resizeTimeout) clearTimeout(resizeTimeout);
-                resizeTimeout = setTimeout(() => {
-                    const oldScrollBehavior = projectsScroll.style.scrollBehavior;
-                    projectsScroll.style.scrollBehavior = 'auto';
-                    setupInfiniteScroll();
-                    setTimeout(() => {
-                        projectsScroll.style.scrollBehavior = oldScrollBehavior;
-                    }, 100);
-                }, 200);
-            });
-            
+
+        // Horizontal scroll with drag
+        const scrollContainer = document.getElementById('horizontalScroll');
+        if (scrollContainer) {
             let isDown = false;
-            let startX;
-            let scrollLeftStart;
-            
-            projectsScroll.addEventListener('mousedown', (e) => {
-                isDown = true;
-                projectsScroll.style.cursor = 'grabbing';
-                startX = e.pageX - projectsScroll.offsetLeft;
-                scrollLeftStart = projectsScroll.scrollLeft;
-            });
-            
-            projectsScroll.addEventListener('mouseleave', () => {
-                isDown = false;
-                projectsScroll.style.cursor = 'grab';
-            });
-            
-            projectsScroll.addEventListener('mouseup', () => {
-                isDown = false;
-                projectsScroll.style.cursor = 'grab';
-            });
-            
-            projectsScroll.addEventListener('mousemove', (e) => {
-                if (!isDown) return;
-                e.preventDefault();
-                const x = e.pageX - projectsScroll.offsetLeft;
-                const walk = (x - startX) * 1.5;
-                projectsScroll.scrollLeft = scrollLeftStart - walk;
-            });
-            
-            let touchStartX = 0;
-            let touchEndX = 0;
-            
-            projectsScroll.addEventListener('touchstart', (e) => {
-                touchStartX = e.changedTouches[0].screenX;
-            });
-            
-            projectsScroll.addEventListener('touchend', (e) => {
-                touchEndX = e.changedTouches[0].screenX;
-                const swipeThreshold = 50;
-                const diff = touchStartX - touchEndX;
-                
-                if (Math.abs(diff) > swipeThreshold) {
-                    if (diff > 0) {
-                        scrollProjects(1);
-                    } else {
-                        scrollProjects(-1);
-                    }
-                }
-            });
-            
-            setTimeout(() => {
-                handleInfiniteScroll();
-            }, 100);
+            let startX, scrollLeft;
+            scrollContainer.addEventListener('mousedown', (e) => { isDown = true; startX = e.pageX - scrollContainer.offsetLeft; scrollLeft = scrollContainer.scrollLeft; scrollContainer.style.cursor = 'grabbing'; });
+            window.addEventListener('mouseup', () => { isDown = false; if (scrollContainer) scrollContainer.style.cursor = 'grab'; });
+            window.addEventListener('mousemove', (e) => { if (!isDown) return; e.preventDefault(); const x = e.pageX - scrollContainer.offsetLeft; const walk = (x - startX) * 1.5; scrollContainer.scrollLeft = scrollLeft - walk; });
+            scrollContainer.style.cursor = 'grab';
         }
     </script>
 </body>
