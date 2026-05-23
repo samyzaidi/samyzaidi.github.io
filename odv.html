@@ -1,0 +1,1169 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ODV+ | Occasion de Voir Plus - Affichage Publicitaire Algérie</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #E63946;
+            --primary-dark: #c1121f;
+            --secondary: #1D3557;
+            --accent: #457B9D;
+            --light: #F1FAEE;
+            --dark: #1a1a2e;
+            --gray: #6c757d;
+            --light-gray: #f8f9fa;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            overflow-x: hidden;
+        }
+
+        img {
+            max-width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        /* Navigation */
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: rgba(255,255,255,0.97);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            box-shadow: 0 2px 20px rgba(0,0,0,0.08);
+            transition: all 0.3s ease;
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 70px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 800;
+            font-size: 1.5rem;
+            color: var(--secondary);
+        }
+
+        .logo span {
+            color: var(--primary);
+        }
+
+        .logo-tag {
+            font-size: 0.65rem;
+            font-weight: 500;
+            color: var(--gray);
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 32px;
+            align-items: center;
+        }
+
+        .nav-links a {
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: var(--secondary);
+            transition: color 0.3s;
+            position: relative;
+        }
+
+        .nav-links a:hover {
+            color: var(--primary);
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--primary);
+            transition: width 0.3s;
+        }
+
+        .nav-links a:hover::after {
+            width: 100%;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 28px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            transition: all 0.3s;
+            cursor: pointer;
+            border: none;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(230, 57, 70, 0.3);
+        }
+
+        .btn-outline {
+            background: transparent;
+            color: var(--secondary);
+            border: 2px solid var(--secondary);
+        }
+
+        .btn-outline:hover {
+            background: var(--secondary);
+            color: white;
+        }
+
+        .mobile-toggle {
+            display: none;
+            flex-direction: column;
+            gap: 5px;
+            cursor: pointer;
+            padding: 5px;
+        }
+
+        .mobile-toggle span {
+            display: block;
+            width: 25px;
+            height: 2px;
+            background: var(--secondary);
+            transition: all 0.3s;
+        }
+
+        /* Hero Section */
+        .hero {
+            min-height: 100vh;
+            background: linear-gradient(135deg, var(--secondary) 0%, #0f3460 100%);
+            display: flex;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+            padding-top: 70px;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="40" fill="none" stroke="rgba(255,255,255,0.03)" stroke-width="0.5"/></svg>');
+            background-size: 80px 80px;
+            opacity: 0.5;
+        }
+
+        .hero-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 60px 20px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 60px;
+            align-items: center;
+            position: relative;
+            z-index: 1;
+        }
+
+        .hero-content h1 {
+            font-size: 3.2rem;
+            font-weight: 800;
+            color: white;
+            line-height: 1.1;
+            margin-bottom: 24px;
+        }
+
+        .hero-content h1 span {
+            color: var(--primary);
+        }
+
+        .hero-content p {
+            font-size: 1.15rem;
+            color: rgba(255,255,255,0.85);
+            margin-bottom: 32px;
+            line-height: 1.7;
+        }
+
+        .hero-btns {
+            display: flex;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        .hero-btns .btn-outline {
+            color: white;
+            border-color: rgba(255,255,255,0.5);
+        }
+
+        .hero-btns .btn-outline:hover {
+            background: white;
+            color: var(--secondary);
+            border-color: white;
+        }
+
+        .hero-image {
+            position: relative;
+        }
+
+        .hero-image img {
+            border-radius: 16px;
+            box-shadow: 0 30px 60px rgba(0,0,0,0.3);
+            width: 100%;
+            object-fit: cover;
+            height: 450px;
+        }
+
+        .hero-stats {
+            position: absolute;
+            bottom: -20px;
+            left: -20px;
+            background: white;
+            padding: 20px 30px;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.15);
+        }
+
+        .hero-stats .number {
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--primary);
+        }
+
+        .hero-stats .label {
+            font-size: 0.8rem;
+            color: var(--gray);
+        }
+
+        /* Section Styles */
+        .section {
+            padding: 80px 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 60px;
+        }
+
+        .section-header h2 {
+            font-size: 2.4rem;
+            font-weight: 800;
+            color: var(--secondary);
+            margin-bottom: 16px;
+        }
+
+        .section-header p {
+            color: var(--gray);
+            font-size: 1.05rem;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .tag {
+            display: inline-block;
+            padding: 6px 16px;
+            background: rgba(230, 57, 70, 0.1);
+            color: var(--primary);
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border-radius: 20px;
+            margin-bottom: 16px;
+        }
+
+        /* About Section */
+        .about-section {
+            background: var(--light-gray);
+        }
+
+        .about-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 60px;
+            align-items: center;
+        }
+
+        .about-content h2 {
+            font-size: 2.2rem;
+            font-weight: 800;
+            color: var(--secondary);
+            margin-bottom: 20px;
+        }
+
+        .about-content p {
+            color: var(--gray);
+            margin-bottom: 16px;
+            line-height: 1.8;
+        }
+
+        .about-content ul {
+            list-style: none;
+            margin-top: 20px;
+        }
+
+        .about-content ul li {
+            padding: 8px 0;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: var(--secondary);
+            font-weight: 500;
+        }
+
+        .about-content ul li::before {
+            content: '✓';
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 24px;
+            height: 24px;
+            background: var(--primary);
+            color: white;
+            border-radius: 50%;
+            font-size: 0.8rem;
+            flex-shrink: 0;
+        }
+
+        .about-image {
+            position: relative;
+        }
+
+        .about-image img {
+            border-radius: 16px;
+            width: 100%;
+            height: 400px;
+            object-fit: cover;
+        }
+
+        /* Services Section */
+        .services-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 30px;
+        }
+
+        .service-card {
+            background: white;
+            border-radius: 16px;
+            padding: 40px 30px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+            transition: all 0.3s;
+            border: 1px solid rgba(0,0,0,0.04);
+        }
+
+        .service-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+
+        .service-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 24px;
+            color: white;
+            font-size: 1.5rem;
+        }
+
+        .service-card h3 {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--secondary);
+            margin-bottom: 12px;
+        }
+
+        .service-card p {
+            color: var(--gray);
+            font-size: 0.95rem;
+            line-height: 1.7;
+        }
+
+        /* Supports Section */
+        .supports-section {
+            background: var(--secondary);
+            color: white;
+        }
+
+        .supports-section .section-header h2 {
+            color: white;
+        }
+
+        .supports-section .section-header p {
+            color: rgba(255,255,255,0.7);
+        }
+
+        .supports-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 30px;
+        }
+
+        .support-card {
+            background: rgba(255,255,255,0.05);
+            border-radius: 16px;
+            overflow: hidden;
+            border: 1px solid rgba(255,255,255,0.1);
+            transition: all 0.3s;
+        }
+
+        .support-card:hover {
+            transform: translateY(-8px);
+            border-color: var(--primary);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+        }
+
+        .support-card img {
+            width: 100%;
+            height: 220px;
+            object-fit: cover;
+        }
+
+        .support-card .content {
+            padding: 24px;
+        }
+
+        .support-card .badge {
+            display: inline-block;
+            padding: 4px 12px;
+            background: var(--primary);
+            color: white;
+            font-size: 0.7rem;
+            font-weight: 600;
+            border-radius: 20px;
+            margin-bottom: 12px;
+        }
+
+        .support-card h3 {
+            font-size: 1.2rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .support-card p {
+            color: rgba(255,255,255,0.7);
+            font-size: 0.9rem;
+            line-height: 1.6;
+        }
+
+        /* Mobile Section */
+        .mobile-section {
+            background: var(--light-gray);
+        }
+
+        .mobile-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 60px;
+            align-items: center;
+        }
+
+        .mobile-content h2 {
+            font-size: 2.2rem;
+            font-weight: 800;
+            color: var(--secondary);
+            margin-bottom: 20px;
+        }
+
+        .mobile-content ul {
+            list-style: none;
+            margin-top: 20px;
+        }
+
+        .mobile-content ul li {
+            padding: 10px 0;
+            padding-left: 32px;
+            position: relative;
+            color: var(--gray);
+            line-height: 1.7;
+        }
+
+        .mobile-content ul li::before {
+            content: '→';
+            position: absolute;
+            left: 0;
+            color: var(--primary);
+            font-weight: 700;
+        }
+
+        .mobile-image img {
+            border-radius: 16px;
+            width: 100%;
+            height: 400px;
+            object-fit: cover;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+
+        /* Contact Section */
+        .contact-section {
+            background: white;
+        }
+
+        .contact-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 60px;
+        }
+
+        .contact-info h2 {
+            font-size: 2.2rem;
+            font-weight: 800;
+            color: var(--secondary);
+            margin-bottom: 20px;
+        }
+
+        .contact-info p {
+            color: var(--gray);
+            margin-bottom: 30px;
+            line-height: 1.7;
+        }
+
+        .contact-details {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .contact-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+        }
+
+        .contact-item .icon {
+            width: 48px;
+            height: 48px;
+            background: rgba(230, 57, 70, 0.1);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary);
+            font-size: 1.2rem;
+            flex-shrink: 0;
+        }
+
+        .contact-item h4 {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--secondary);
+            margin-bottom: 4px;
+        }
+
+        .contact-item p {
+            font-size: 0.9rem;
+            color: var(--gray);
+            margin: 0;
+        }
+
+        .contact-form {
+            background: var(--light-gray);
+            padding: 40px;
+            border-radius: 16px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--secondary);
+            margin-bottom: 8px;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 14px 16px;
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            font-family: inherit;
+            font-size: 0.95rem;
+            transition: all 0.3s;
+            background: white;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(230, 57, 70, 0.1);
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 120px;
+        }
+
+        /* Footer */
+        .footer {
+            background: var(--dark);
+            color: white;
+            padding: 40px 20px;
+        }
+
+        .footer-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .footer-logo {
+            font-weight: 800;
+            font-size: 1.3rem;
+        }
+
+        .footer-logo span {
+            color: var(--primary);
+        }
+
+        .footer-links {
+            display: flex;
+            gap: 24px;
+        }
+
+        .footer-links a {
+            color: rgba(255,255,255,0.6);
+            font-size: 0.9rem;
+            transition: color 0.3s;
+        }
+
+        .footer-links a:hover {
+            color: white;
+        }
+
+        .footer-copy {
+            color: rgba(255,255,255,0.4);
+            font-size: 0.85rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 992px) {
+            .hero-container,
+            .about-grid,
+            .mobile-grid,
+            .contact-grid {
+                grid-template-columns: 1fr;
+                gap: 40px;
+            }
+
+            .services-grid,
+            .supports-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .hero-content h1 {
+                font-size: 2.4rem;
+            }
+
+            .hero-stats {
+                position: relative;
+                bottom: auto;
+                left: auto;
+                margin-top: 20px;
+            }
+
+            .section-header h2 {
+                font-size: 1.9rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+                position: absolute;
+                top: 70px;
+                left: 0;
+                right: 0;
+                background: white;
+                flex-direction: column;
+                padding: 20px;
+                gap: 16px;
+                box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            }
+
+            .nav-links.active {
+                display: flex;
+            }
+
+            .mobile-toggle {
+                display: flex;
+            }
+
+            .services-grid,
+            .supports-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .hero-content h1 {
+                font-size: 2rem;
+            }
+
+            .hero-btns {
+                flex-direction: column;
+            }
+
+            .hero-btns .btn {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+
+            .section {
+                padding: 60px 20px;
+            }
+
+            .about-content h2,
+            .mobile-content h2,
+            .contact-info h2 {
+                font-size: 1.8rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .hero-content h1 {
+                font-size: 1.7rem;
+            }
+
+            .section-header h2 {
+                font-size: 1.5rem;
+            }
+
+            .contact-form {
+                padding: 24px;
+            }
+        }
+    </style>
+<base target="_blank">
+</head>
+<body>
+
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="#" class="logo">
+                <div>
+                    ODV<span>+</span>
+                    <div class="logo-tag">Occasion de Voir Plus</div>
+                </div>
+            </a>
+
+            <div class="nav-links" id="navLinks">
+                <a href="#about">Qui sommes-nous</a>
+                <a href="#services">Services</a>
+                <a href="#supports">Supports</a>
+                <a href="#mobile">Mobile</a>
+                <a href="#contact">Contact</a>
+                <a href="#contact" class="btn btn-primary">Demander un devis</a>
+            </div>
+
+            <div class="mobile-toggle" onclick="toggleMenu()">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-container">
+            <div class="hero-content">
+                <h1>Votre Message <span>Mérite d'être Vu</span></h1>
+                <p>ODV+ est une agence d'affichage publicitaire présente dans plus de 40 wilayas Algériennes. Nous offrons des supports premium allant du petit au très grand format pour maximiser la visibilité de votre marque.</p>
+                <div class="hero-btns">
+                    <a href="#supports" class="btn btn-primary">Découvrir nos supports →</a>
+                    <a href="#contact" class="btn btn-outline">Lancer votre campagne</a>
+                </div>
+            </div>
+            <div class="hero-image">
+                <img src="https://kimi-web-img.moonshot.cn/img/odvplusalgerie.com/84fa9ca9678100406f4ae3f7cb9e1d0ef37b0e30.jpg" alt="Panneau publicitaire ODV+ en Algérie">
+                <div class="hero-stats">
+                    <div class="number">40+</div>
+                    <div class="label">Wilayas couvertes</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section class="about-section" id="about">
+        <div class="section">
+            <div class="about-grid">
+                <div class="about-content">
+                    <span class="tag">Qui sommes-nous</span>
+                    <h2>Des Professionnels de la Communication Extérieure</h2>
+                    <p>Des professionnels exerçant exclusivement le métier de la communication extérieure. Aujourd'hui, fort d'un patrimoine toujours plus riche et d'un réseau en pleine expansion, ODV+, présent dans plus de 40 wilayas Algériennes, permet aux annonceurs de garantir un contact continu avec un nombre de personnes de plus en plus important sur le territoire Algérien.</p>
+                    <p>Notre politique : <strong>« La Qualité »</strong>, donner entière satisfaction à tous nos clients en offrant des produits, des solutions média, des services de qualité supérieure.</p>
+                    <ul>
+                        <li>Efficacité</li>
+                        <li>Disponibilité</li>
+                        <li>Réactivité</li>
+                        <li>Fiabilité</li>
+                        <li>Transparence</li>
+                        <li>Flexibilité</li>
+                        <li>Innovation & créativité</li>
+                        <li>Suivi</li>
+                    </ul>
+                </div>
+                <div class="about-image">
+                    <img src="https://kimi-web-img.moonshot.cn/img/theempire.com/1d352356dff4b744c6ce3417a94617fd4a921cb7.png" alt="Unipole publicitaire ODV+ Algérie">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Services Section -->
+    <section class="services-section" id="services">
+        <div class="section">
+            <div class="section-header">
+                <span class="tag">Nos Services</span>
+                <h2>Solutions d'Affichage Complètes</h2>
+                <p>ODV+ innove en permanence pour se différencier de l'affichage classique, grâce à une équipe jeune et dynamique.</p>
+            </div>
+
+            <div class="services-grid">
+                <div class="service-card">
+                    <div class="service-icon">📢</div>
+                    <h3>Lancement Produit</h3>
+                    <p>La garantie d'une montée en puissance rapide et des performances globales élevées pour votre campagne de lancement.</p>
+                </div>
+
+                <div class="service-card">
+                    <div class="service-icon">🏬</div>
+                    <h3>Création de Trafic</h3>
+                    <p>L'affichage est le dernier contact avant l'achat. Plus de 90% des individus sont en contact avec l'affichage 2 heures avant leur achat.</p>
+                </div>
+
+                <div class="service-card">
+                    <div class="service-icon">🎯</div>
+                    <h3>Développement Image</h3>
+                    <p>Développer son image en s'appropriant un territoire et son taux d'occupation par ville.</p>
+                </div>
+
+                <div class="service-card">
+                    <div class="service-icon">📍</div>
+                    <h3>Ciblage Géomarketé</h3>
+                    <p>Réseau géomarketé pour être présent au cœur des « pôles de vie » : superettes pour ménagères, zones de loisirs pour CSP+++.</p>
+                </div>
+
+                <div class="service-card">
+                    <div class="service-icon">💡</div>
+                    <h3>La Force du Lumineux</h3>
+                    <p>Des panneaux lumineux assurant une visibilité 24h/24 et un impact mémorisation optimal grâce au timing visibilité-emplacement.</p>
+                </div>
+
+                <div class="service-card">
+                    <div class="service-icon">🚀</div>
+                    <h3>Brand Experience</h3>
+                    <p>Concept affichage innovant permettant de vivre une expérience marque unique et mémorable.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Supports Section -->
+    <section class="supports-section" id="supports">
+        <div class="section">
+            <div class="section-header">
+                <span class="tag" style="background: rgba(255,255,255,0.15); color: white;">Nos Supports</span>
+                <h2>Formats pour Tous les Besoins</h2>
+                <p>ODV+ dispose de plusieurs formats d'affichage répondant aux besoins spécifiques de chaque annonceur, allant du petit au très grand format.</p>
+            </div>
+
+            <div class="supports-grid">
+                <div class="support-card">
+                    <img src="https://kimi-web-img.moonshot.cn/img/image.made-in-china.com/39bd5cb67c3af691d8c4035b65bacb810e2a697d.webp" alt="Abribus ODV+">
+                    <div class="content">
+                        <span class="badge">URBAIN</span>
+                        <h3>Abribus</h3>
+                        <p>Formats disponibles : Abribus 4m, Abribus 7m, Abribus 12m, Grand Caisson, Abribus Innovate et Full Covering. Visibilité optimale dans les zones urbaines à fort trafic.</p>
+                    </div>
+                </div>
+
+                <div class="support-card">
+                    <img src="https://kimi-web-img.moonshot.cn/img/www.prismaflex.com/244d65631f2c835a40b40a8a0ea8574fa3f7ca0b.jpg" alt="Panneaux ODV+">
+                    <div class="content">
+                        <span class="badge">NATIONAL</span>
+                        <h3>Panneaux Fixes & Prismaflex</h3>
+                        <p>Panneaux 8m² à l'échelle nationale sur 33 wilayas. Réseau diversifié entre panneaux statiques, déroulants et LED. Emplacements stratégiques sur zones d'habitation et de fréquentation.</p>
+                    </div>
+                </div>
+
+                <div class="support-card">
+                    <img src="https://kimi-web-img.moonshot.cn/img/5mrorwxhmlkjjij.leadongcdn.com/4b6a13aaeb81a65d78b6a119200843c2b9077b7a.jpg" alt="Unipole ODV+">
+                    <div class="content">
+                        <span class="badge">GRAND FORMAT</span>
+                        <h3>Unipole & Rotapanel</h3>
+                        <p>Grand format d'exception pour un impact maximal. Panneaux Rotapanel 8m² permettant l'affichage de plusieurs messages sur un même support.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Mobile Section -->
+    <section class="mobile-section" id="mobile">
+        <div class="section">
+            <div class="mobile-grid">
+                <div class="mobile-image">
+                    <img src="https://kimi-web-img.moonshot.cn/img/image.made-in-china.com/91a29fe5804fcc3cea38412f1a126076ffe2b0b7.webp" alt="Affichage mobile sur bus ODV+">
+                </div>
+                <div class="mobile-content">
+                    <span class="tag">Affichage Mobile</span>
+                    <h2>L'Efficacité du Mobile</h2>
+                    <p>L'affichage mobile sur Bus, le véritable maillage de l'agglomération. Un média permettant de cibler les différents âges, sexes et CSP :</p>
+                    <ul>
+                        <li>Actifs</li>
+                        <li>Jeunes</li>
+                        <li>Cadres</li>
+                        <li>Consommateurs</li>
+                        <li>Un média accompagnant la cible dans ses différents déplacements</li>
+                        <li>Une forte consommation de l'affichage mobile à l'intérieur des villes</li>
+                        <li>Profiter d'une répartition des bus sur nos réseaux partenaires afin de couvrir diverses villes</li>
+                        <li>Dynamiser votre communication à travers un plan média offrant le maximum de couverture et renforcement de la répétition</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section class="contact-section" id="contact">
+        <div class="section">
+            <div class="contact-grid">
+                <div class="contact-info">
+                    <span class="tag">Contact</span>
+                    <h2>Lancez Votre Campagne</h2>
+                    <p>Notre équipe vous accompagne dans la définition de votre stratégie d'affichage. Contactez-nous pour obtenir un devis personnalisé.</p>
+
+                    <div class="contact-details">
+                        <div class="contact-item">
+                            <div class="icon">📍</div>
+                            <div>
+                                <h4>Adresse</h4>
+                                <p>10 rue Laroussi Amroune, El Biar - Alger</p>
+                            </div>
+                        </div>
+
+                        <div class="contact-item">
+                            <div class="icon">📞</div>
+                            <div>
+                                <h4>Téléphone</h4>
+                                <p>+213 23 46 14 16 / 35</p>
+                            </div>
+                        </div>
+
+                        <div class="contact-item">
+                            <div class="icon">✉️</div>
+                            <div>
+                                <h4>Email</h4>
+                                <p>contact@odvplusalgerie.com</p>
+                            </div>
+                        </div>
+
+                        <div class="contact-item">
+                            <div class="icon">🌐</div>
+                            <div>
+                                <h4>Site Web</h4>
+                                <p>www.odvplus.com</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="contact-form">
+                    <form onsubmit="handleSubmit(event)">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Nom complet *</label>
+                                <input type="text" placeholder="Votre nom" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Entreprise</label>
+                                <input type="text" placeholder="Nom de l'entreprise">
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Email *</label>
+                                <input type="email" placeholder="contact@entreprise.dz" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Téléphone</label>
+                                <input type="tel" placeholder="0xxx xx xx xx">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Type de support souhaité</label>
+                            <select>
+                                <option value="">Sélectionnez un type</option>
+                                <option value="abribus">Abribus (4m, 7m, 12m)</option>
+                                <option value="panneau-fixe">Panneau Fixe</option>
+                                <option value="prismaflex">Panneau Prismaflex 8m²</option>
+                                <option value="rotapanel">Panneau Rotapanel 8m²</option>
+                                <option value="unipole">Unipole</option>
+                                <option value="mobile">Affichage Mobile (Bus)</option>
+                                <option value="mixte">Campagne Mixte</option>
+                                <option value="autre">Autre</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Message *</label>
+                            <textarea placeholder="Décrivez votre projet de campagne..." required></textarea>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary" style="width: 100%; justify-content: center;">
+                            Envoyer la demande →
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-container">
+            <div class="footer-logo">
+                ODV<span>+</span> Algérie
+            </div>
+
+            <div class="footer-links">
+                <a href="#about">Qui sommes-nous</a>
+                <a href="#services">Services</a>
+                <a href="#supports">Supports</a>
+                <a href="#contact">Contact</a>
+            </div>
+
+            <div class="footer-copy">
+                © 2024 ODV+ (Occasion de Voir Plus). Tous droits réservés.
+            </div>
+        </div>
+    </footer>
+
+    <!-- Toast -->
+    <div id="toast" style="
+        position: fixed;
+        bottom: 30px;
+        right: 30px;
+        background: var(--secondary);
+        color: white;
+        padding: 16px 24px;
+        border-radius: 12px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        transform: translateY(100px);
+        opacity: 0;
+        transition: all 0.4s;
+        z-index: 9999;
+        font-weight: 500;
+    ">
+        ✓ Message envoyé avec succès !
+    </div>
+
+    <script>
+        function toggleMenu() {
+            document.getElementById('navLinks').classList.toggle('active');
+        }
+
+        function handleSubmit(e) {
+            e.preventDefault();
+            const toast = document.getElementById('toast');
+            toast.style.transform = 'translateY(0)';
+            toast.style.opacity = '1';
+            setTimeout(() => {
+                toast.style.transform = 'translateY(100px)';
+                toast.style.opacity = '0';
+            }, 3000);
+        }
+
+        // Smooth scroll
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    document.getElementById('navLinks').classList.remove('active');
+                }
+            });
+        });
+
+        // Navbar scroll effect
+        window.addEventListener('scroll', () => {
+            const navbar = document.querySelector('.navbar');
+            if (window.scrollY > 50) {
+                navbar.style.boxShadow = '0 4px 30px rgba(0,0,0,0.12)';
+            } else {
+                navbar.style.boxShadow = '0 2px 20px rgba(0,0,0,0.08)';
+            }
+        });
+    </script>
+
+</body>
+</html>
